@@ -1,6 +1,7 @@
 import sys
 
 import numpy as np
+import matplotlib.pyplot as plt
 from core import BadAlloc, Byte
 
 
@@ -52,6 +53,13 @@ class Heap:
                     self.buckets_used[j][i] = 0
                     return
 
+    def show(self):
+        fig, ax = plt.subplots()
+        im = ax.imshow(Heap.buckets_used)
+        ax.set_title("Allocated Memory")
+        fig.tight_layout()
+        plt.show()
+
     def _start(self):
         for i in range(Heap.n_rows):
             for j in range(Heap.n_buckets):
@@ -69,8 +77,9 @@ def delete(p):
     return heap.free(p)
 
 
-print(heap.buckets_used)
-t = new(5)
-print(heap.buckets_used)
-print(t)
-print(*t)
+heap.show()
+t = new(1)
+for i in range(5):
+    new(5)
+delete(t)
+heap.show()
