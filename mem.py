@@ -87,7 +87,6 @@ class Heap:
         )
         fig.update_yaxes(
             scaleanchor='x',
-            scaleratio=1,
         )
 
         fig.show()
