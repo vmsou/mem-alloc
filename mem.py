@@ -106,7 +106,7 @@ class Heap:
         fig.update_layout(
             hoverlabel_align='auto',
             title="Alocação de Memória",
-            width=1840, height=1000,
+            width=Heap.n_buckets * 1840 / 40, height=Heap.n_rows * 1000 / 20,
         )
         fig.show()
 
