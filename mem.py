@@ -15,6 +15,7 @@ class Bucket:
     def __init__(self):
         self._data = Byte()
         self.type = "void"
+        self.color = 0
 
     def __repr__(self):
         return f"{hex(id(self))}"
@@ -30,11 +31,13 @@ class Bucket:
     def data(self, value):
         self.data.value = value
         self.type = type(value).__name__
+        self.color = Heap.count
 
 
 class Heap:
-    n_buckets = 10  # int(input("Number of columns: "))
-    n_rows = 10  # int(input("Number of rows: "))
+    count = 0
+    n_buckets = 40  # int(input("Number of columns: "))
+    n_rows = 20  # int(input("Number of rows: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -47,6 +50,7 @@ class Heap:
         for i in range(Heap.n_rows):
             for j in range(Heap.n_buckets):
                 if not self.buckets_used[i][j]:
+                    Heap.count += 1
                     self.buckets_used[i][j] = 1
                     self.buckets[i][j].data = obj
                     return self.buckets[i][j]
@@ -67,13 +71,13 @@ class Heap:
         plt.show()
 
     def show2(self):
-        xs = list(range(heap.n_buckets)) * heap.n_rows
-        ys = [x for x in range(heap.n_rows, 0, -1) for _ in range(heap.n_rows)]
-        # zs = [heap.buckets_used[i][j] for i in range(heap.n_buckets) for j in range(heap.n_rows)]
-        values = [heap.buckets[i][j].data.value for i in range(heap.n_buckets) for j in range(heap.n_rows)]
-        address = [heap.buckets[i][j] for j in range(heap.n_buckets) for i in range(heap.n_rows)]
-        tlabels = [heap.buckets[i][j].type for i in range(heap.n_buckets) for j in range(heap.n_rows)]
-        zs = [colors[t] for t in tlabels]
+        xs = list(range(Heap.n_buckets)) * Heap.n_rows
+        ys = [y for y in range(Heap.n_rows) for _ in range(Heap.n_buckets)][::-1]
+        # zs = [Heap.buckets_used[i][j] for i in range(Heap.n_buckets) for j in range(Heap.n_rows)]
+        values = [Heap.buckets[i][j].data.value for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
+        address = [Heap.buckets[i][j] for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
+        tlabels = [Heap.buckets[i][j].type for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
+        zs = [a.color for a in address]
 
         fig = go.Figure(go.Heatmap(
             x=xs,
@@ -90,18 +94,19 @@ class Heap:
             ygap=1,
         ))
         fig.update_yaxes(
+            showgrid=False,
             scaleanchor='x',
             tickvals=list(range(Heap.n_rows + 1)),
 
         )
         fig.update_xaxes(
+            showgrid=False,
             tickvals=list(range(Heap.n_buckets)),
         )
         fig.update_layout(
             hoverlabel_align='auto',
             title="Alocação de Memória",
-            width=1000, height=1000,
-            autosize=False,
+            width=1840, height=1000,
         )
         fig.show()
 
@@ -122,9 +127,10 @@ def delete(p):
     return heap.free(p)
 
 
-new("Hello")
 new(25)
 new(10)
+new("Hello World")
+
 heap.show2()
 
 
