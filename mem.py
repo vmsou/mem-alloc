@@ -68,7 +68,7 @@ class Heap:
         xs = list(range(heap.n_buckets)) * heap.n_rows
         ys = [x for x in range(heap.n_rows, 0, -1) for _ in range(heap.n_rows)]
         zs = [heap.buckets_used[i][j] for i in range(heap.n_buckets) for j in range(heap.n_rows)]
-        values = [heap.buckets[i][j].data.value for j in range(heap.n_buckets) for i in range(heap.n_rows)]
+        values = [heap.buckets[i][j].data.value for i in range(heap.n_buckets) for j in range(heap.n_rows)]
         address = [heap.buckets[i][j] for j in range(heap.n_buckets) for i in range(heap.n_rows)]
 
         fig = go.Figure(go.Heatmap(
@@ -83,7 +83,7 @@ class Heap:
         ))
         fig.update_layout(
             hoverlabel_align='right',
-            title="Teste",
+            title="Alocação de Memória",
         )
         fig.update_yaxes(
             scaleanchor='x',
