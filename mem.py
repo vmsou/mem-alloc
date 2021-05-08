@@ -15,7 +15,7 @@ class Bucket:
         self.type = "void"
 
     def __repr__(self):
-        return f"[{self.type}] {hex(id(self))}"
+        return f"{hex(id(self))}"
 
     def __iter__(self):
         yield self.data.value
@@ -31,8 +31,8 @@ class Bucket:
 
 
 class Heap:
-    n_buckets = 5 #int(input("Number of columns: "))
-    n_rows = 5 #int(input("Number of rows: "))
+    n_buckets = 10  # int(input("Number of columns: "))
+    n_rows = 10  # int(input("Number of rows: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -90,6 +90,10 @@ class Heap:
         )
         fig.update_yaxes(
             scaleanchor='x',
+            tickvals=xs[::-1],
+        )
+        fig.update_xaxes(
+            tickvals=xs,
         )
 
         fig.show()
