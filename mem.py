@@ -64,8 +64,13 @@ class Heap:
         plt.show()
 
     def show2(self):
-        df = pd.DataFrame(Heap.buckets_used)
-        fig = px.imshow(df)
+        dt = pd.DataFrame(heap.buckets_used)
+        # dt['Values'] = [[Heap.buckets[i][j].data.value for j in range(Heap.n_buckets)] for i in range(Heap.n_rows)]
+        dt['Address'] = [[Heap.buckets[i][j] for j in range(Heap.n_buckets)] for i in range(Heap.n_rows)]
+        fig = px.line(dt, x='x', y='y', color='Address')
+        fig.update_traces(mode='markers+lines')
+
+
         fig.show()
 
     def _start(self):
@@ -85,9 +90,8 @@ def delete(p):
     return heap.free(p)
 
 
-heap.show2()
-t = new(1)
-for i in range(5):
-    new(5)
-delete(t)
-heap.show2()
+xs = list(range(heap.n_buckets)) * heap.n_rows
+ys = [[y] * heap.n_buckets for y in range(heap.n_rows)]
+print(xs)
+
+
