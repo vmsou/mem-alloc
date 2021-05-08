@@ -31,8 +31,8 @@ class Bucket:
 
 
 class Heap:
-    n_buckets = 3 #int(input("Number of columns: "))
-    n_rows = 3 #int(input("Number of rows: "))
+    n_buckets = 5 #int(input("Number of columns: "))
+    n_rows = 5 #int(input("Number of rows: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -77,6 +77,7 @@ class Heap:
             z=zs,
             hovertemplate="""
             %{text}
+            <extra></extra>
             """,
             text=[f'Address: {a}\t\t<i><b>Value</b></i>: {v}' for a, v in zip(address, values)],
             showlegend=False,
