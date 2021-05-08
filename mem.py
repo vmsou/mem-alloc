@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 
 from core import BadAlloc, Byte
 
+colors = {"void": 0, "str": 1, 'int': 2}
+
 
 class Bucket:
     size = 4096
@@ -67,10 +69,11 @@ class Heap:
     def show2(self):
         xs = list(range(heap.n_buckets)) * heap.n_rows
         ys = [x for x in range(heap.n_rows, 0, -1) for _ in range(heap.n_rows)]
-        zs = [heap.buckets_used[i][j] for i in range(heap.n_buckets) for j in range(heap.n_rows)]
+        # zs = [heap.buckets_used[i][j] for i in range(heap.n_buckets) for j in range(heap.n_rows)]
         values = [heap.buckets[i][j].data.value for i in range(heap.n_buckets) for j in range(heap.n_rows)]
         address = [heap.buckets[i][j] for j in range(heap.n_buckets) for i in range(heap.n_rows)]
         tlabels = [heap.buckets[i][j].type for i in range(heap.n_buckets) for j in range(heap.n_rows)]
+        zs = [colors[t] for t in tlabels]
 
         fig = go.Figure(go.Heatmap(
             x=xs,
@@ -83,19 +86,23 @@ class Heap:
             customdata=tlabels,
             text=[f'Address: {a}\t\t<i><b>Value</b></i>: {v}' for a, v in zip(address, values)],
             showlegend=False,
+            xgap=1,
+            ygap=1,
         ))
-        fig.update_layout(
-            hoverlabel_align='right',
-            title="Alocação de Memória",
-        )
         fig.update_yaxes(
             scaleanchor='x',
-            tickvals=xs[::-1],
+            tickvals=list(range(Heap.n_rows + 1)),
+
         )
         fig.update_xaxes(
-            tickvals=xs,
+            tickvals=list(range(Heap.n_buckets)),
         )
-
+        fig.update_layout(
+            hoverlabel_align='auto',
+            title="Alocação de Memória",
+            width=1000, height=1000,
+            autosize=False,
+        )
         fig.show()
 
     def _start(self):
@@ -117,6 +124,7 @@ def delete(p):
 
 new("Hello")
 new(25)
+new(10)
 heap.show2()
 
 
