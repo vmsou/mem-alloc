@@ -1,6 +1,7 @@
 import sys
 
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 
@@ -10,7 +11,7 @@ colors = {"void": 0, "str": 1, 'int': 2}
 
 
 class Bucket:
-    size = 4096
+    size = 50
 
     def __init__(self):
         self._data = Byte()
@@ -36,8 +37,8 @@ class Bucket:
 
 class Heap:
     count = 0
-    n_buckets = 40  # int(input("Number of columns: "))
-    n_rows = 20  # int(input("Number of rows: "))
+    n_buckets = 10  # int(input("Number of columns: "))
+    n_rows = 10  # int(input("Number of rows: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -45,14 +46,14 @@ class Heap:
         self._start()
 
     def allocate(self, obj):
-        if sys.getsizeof(obj) > Bucket.size:
-            raise BadAlloc("Object too heavy.")
+        blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
         for i in range(Heap.n_rows):
-            for j in range(Heap.n_buckets):
-                if not self.buckets_used[i][j]:
+            for j in range(Heap.n_buckets - blocks):
+                if (self.buckets_used[i][j:j+blocks] == 0).all():
                     Heap.count += 1
-                    self.buckets_used[i][j] = 1
-                    self.buckets[i][j].data = obj
+                    self.buckets_used[i][j:j+blocks] = 1
+                    for k in range(blocks):
+                        self.buckets[i][j+k].data = obj
                     return self.buckets[i][j]
         raise BadAlloc("Not enough space.")
 
@@ -61,6 +62,7 @@ class Heap:
             for j in range(Heap.n_buckets):
                 if self.buckets[j][i] == p:
                     self.buckets_used[j][i] = 0
+                    self.buckets[j][i].color = 0
                     return
 
     def show(self):
@@ -74,9 +76,9 @@ class Heap:
         xs = list(range(Heap.n_buckets)) * Heap.n_rows
         ys = [y for y in range(Heap.n_rows) for _ in range(Heap.n_buckets)][::-1]
         # zs = [Heap.buckets_used[i][j] for i in range(Heap.n_buckets) for j in range(Heap.n_rows)]
-        values = [Heap.buckets[i][j].data.value for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
         address = [Heap.buckets[i][j] for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
-        tlabels = [Heap.buckets[i][j].type for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
+        values = [a.data.value for a in address]
+        tlabels = [a.type for a in address]
         zs = [a.color for a in address]
 
         fig = go.Figure(go.Heatmap(
@@ -106,7 +108,8 @@ class Heap:
         fig.update_layout(
             hoverlabel_align='auto',
             title="Alocação de Memória",
-            width=Heap.n_buckets * 1840 / 40, height=Heap.n_rows * 1000 / 20,
+            #width=Heap.n_buckets * 1840 / 40, height=Heap.n_rows * 1000 / 20,
+            autosize=True,
         )
         fig.show()
 
@@ -127,13 +130,8 @@ def delete(p):
     return heap.free(p)
 
 
-t = new(25)
-heap.buckets[0][0:2] = t
-heap.buckets_used[0][0:2] = 1
-new(10)
-new("Hello World")
-
+t = new(50)
+t2 = new("Hello World")
+t3 = new("Hello World! Testing Block Sizes... This could take 3 blocks")
+delete(t)
 heap.show2()
-
-
-
