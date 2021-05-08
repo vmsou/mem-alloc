@@ -2,8 +2,6 @@ import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 
 from core import BadAlloc, Byte
@@ -14,9 +12,10 @@ class Bucket:
 
     def __init__(self):
         self._data = Byte()
+        self.type = "void"
 
     def __repr__(self):
-        return f"{hex(id(self))}"
+        return f"[{self.type}] {hex(id(self))}"
 
     def __iter__(self):
         yield self.data.value
@@ -28,6 +27,7 @@ class Bucket:
     @data.setter
     def data(self, value):
         self.data.value = value
+        self.type = type(value).__name__
 
 
 class Heap:
@@ -70,6 +70,7 @@ class Heap:
         zs = [heap.buckets_used[i][j] for i in range(heap.n_buckets) for j in range(heap.n_rows)]
         values = [heap.buckets[i][j].data.value for i in range(heap.n_buckets) for j in range(heap.n_rows)]
         address = [heap.buckets[i][j] for j in range(heap.n_buckets) for i in range(heap.n_rows)]
+        tlabels = [heap.buckets[i][j].type for i in range(heap.n_buckets) for j in range(heap.n_rows)]
 
         fig = go.Figure(go.Heatmap(
             x=xs,
@@ -77,8 +78,9 @@ class Heap:
             z=zs,
             hovertemplate="""
             %{text}
-            <extra></extra>
+            <extra>%{customdata}</extra>
             """,
+            customdata=tlabels,
             text=[f'Address: {a}\t\t<i><b>Value</b></i>: {v}' for a, v in zip(address, values)],
             showlegend=False,
         ))
