@@ -2,6 +2,9 @@ import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import plotly.express as px
+
 from core import BadAlloc, Byte
 
 
@@ -60,6 +63,11 @@ class Heap:
         fig.tight_layout()
         plt.show()
 
+    def show2(self):
+        df = pd.DataFrame(Heap.buckets_used)
+        fig = px.imshow(df)
+        fig.show()
+
     def _start(self):
         for i in range(Heap.n_rows):
             for j in range(Heap.n_buckets):
@@ -77,9 +85,9 @@ def delete(p):
     return heap.free(p)
 
 
-heap.show()
+heap.show2()
 t = new(1)
 for i in range(5):
     new(5)
 delete(t)
-heap.show()
+heap.show2()
