@@ -127,7 +127,9 @@ def delete(p):
     return heap.free(p)
 
 
-new(25)
+t = new(25)
+heap.buckets[0][0:2] = t
+heap.buckets_used[0][0:2] = 1
 new(10)
 new("Hello World")
 
