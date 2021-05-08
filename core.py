@@ -8,4 +8,3 @@ class Byte:
 
     def __repr__(self):
         return f"{hex(id(self))}: {self.value}"
-

@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 from core import BadAlloc, Byte
 
@@ -30,8 +31,8 @@ class Bucket:
 
 
 class Heap:
-    n_buckets = int(input("Number of columns: "))
-    n_rows = int(input("Number of rows: "))
+    n_buckets = 3 #int(input("Number of columns: "))
+    n_rows = 3 #int(input("Number of rows: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -64,12 +65,30 @@ class Heap:
         plt.show()
 
     def show2(self):
-        dt = pd.DataFrame(heap.buckets_used)
-        # dt['Values'] = [[Heap.buckets[i][j].data.value for j in range(Heap.n_buckets)] for i in range(Heap.n_rows)]
-        dt['Address'] = [[Heap.buckets[i][j] for j in range(Heap.n_buckets)] for i in range(Heap.n_rows)]
-        fig = px.line(dt, x='x', y='y', color='Address')
-        fig.update_traces(mode='markers+lines')
+        xs = list(range(heap.n_buckets)) * heap.n_rows
+        ys = [x for x in range(heap.n_rows, 0, -1) for _ in range(heap.n_rows)]
+        zs = [heap.buckets_used[i][j] for i in range(heap.n_buckets) for j in range(heap.n_rows)]
+        values = [heap.buckets[i][j].data.value for j in range(heap.n_buckets) for i in range(heap.n_rows)]
+        address = [heap.buckets[i][j] for j in range(heap.n_buckets) for i in range(heap.n_rows)]
 
+        fig = go.Figure(go.Heatmap(
+            x=xs,
+            y=ys,
+            z=zs,
+            hovertemplate="""
+            %{text}
+            """,
+            text=[f'Address: {a}\t\t<i><b>Value</b></i>: {v}' for a, v in zip(address, values)],
+            showlegend=False,
+        ))
+        fig.update_layout(
+            hoverlabel_align='right',
+            title="Teste",
+        )
+        fig.update_yaxes(
+            scaleanchor='x',
+            scaleratio=1,
+        )
 
         fig.show()
 
@@ -90,8 +109,9 @@ def delete(p):
     return heap.free(p)
 
 
-xs = list(range(heap.n_buckets)) * heap.n_rows
-ys = [[y] * heap.n_buckets for y in range(heap.n_rows)]
-print(xs)
+new("Hello")
+new(25)
+heap.show2()
+
 
 
