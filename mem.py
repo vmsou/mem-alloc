@@ -1,10 +1,10 @@
-import itertools
 import math
 import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+
 from core import BadAlloc, Byte, colors
 
 
@@ -57,34 +57,29 @@ class Heap:
 
     def first(self, obj):
         blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
-        print(blocks)
         used = self.buckets_used.flatten()
         for k in range(Heap.n_rows * Heap.n_buckets - blocks):
             if (used[k:k+blocks] == 0).all():
                 Heap.count += 1
-                i = 0
-                for _ in range(blocks):
-                    y = int((k + i) % Heap.n_buckets)
-                    x = int(((k + i) / Heap.n_buckets) % Heap.n_rows)
-                    self.buckets_used[x][y] = 1
-                    self.buckets[x][y].data = obj
-                    i += 1
-
+                x, y = 0, 0
+                for i in range(blocks - 1, -1, -1):
+                    x = (k + i) % Heap.n_buckets
+                    y = (k + i) // Heap.n_buckets
+                    self.buckets_used[y][x] = 1
+                    self.buckets[y][x].data = obj
                 return self.buckets[x][y]
 
+        raise BadAlloc
+
     def free(self, p):
-        blocks = math.ceil(sys.getsizeof(p.data.value) / Bucket.size)
-        tmp = p.id
-        for i in range(Heap.n_rows):
-            for j in range(Heap.n_buckets):
-                if self.buckets_used[i][j]:
-                    if self.buckets[i][j].id == tmp:
-                        self.buckets_used[i][j] = 0
-                        self.buckets[i][j].id = 0
-                        self.buckets[i][j].type = "void"
-                        blocks -= 1
-                        if blocks <= 0:
-                            return
+        a = np.fromiter((a.id for a in Heap.buckets.flatten()), dtype=int)
+        bs = np.extract(a == p.id, Heap.buckets.flatten())
+        c = np.extract(a == p.id, np.arange(Heap.n_rows * Heap.n_buckets))
+        for i, b in zip(c, bs):
+            Heap.buckets_used[i // Heap.n_buckets][i % Heap.n_buckets] = 0
+            b.id = 0
+            b.type = "void"
+        return
 
     def show(self):
         fig, ax = plt.subplots()
@@ -150,8 +145,11 @@ class Heap:
 heap = Heap()
 
 
-def new(obj):
-    return heap.allocate(obj)
+def new(obj, fit="best"):
+    if fit == "best":
+        return heap.allocate(obj)
+    if fit == "first":
+        return heap.first(obj)
 
 
 def delete(p):
@@ -159,9 +157,7 @@ def delete(p):
 
 
 def main():
-    t1 = heap.first(list(range(15)))
-    t2 = heap.first(list(range(35)))
-    """t1 = new(50)
+    t1 = new(50, fit='first')
     print(t1)
     print(*t1)
     t3 = new("Hello World! Testing Block Sizes... This could take 3 blocks")
@@ -170,9 +166,7 @@ def main():
     t5 = new(20)
     delete(t4)
     t6 = new(200)
-    heap.print()
-    heap.show2()"""
-    heap.print()
+    heap.show2()
 
 
 if __name__ == '__main__':
