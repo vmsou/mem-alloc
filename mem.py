@@ -64,7 +64,8 @@ class Heap:
                 Heap.count += 1
                 i = 0
                 for _ in range(blocks):
-                    x, y = np.unravel_index(k + i, (Heap.n_rows, Heap.n_buckets))
+                    y = int((k + i) % Heap.n_buckets)
+                    x = int(((k + i) / Heap.n_buckets) % Heap.n_rows)
                     self.buckets_used[x][y] = 1
                     self.buckets[x][y].data = obj
                     i += 1
