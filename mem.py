@@ -36,7 +36,7 @@ class Bucket:
 class Heap:
     count = 0
     n_rows = 5  # int(input("Number of rows: "))
-    n_buckets = 10  # int(input("Number of columns: "))
+    n_buckets = 20  # int(input("Number of columns: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -67,7 +67,7 @@ class Heap:
                     y = (k + i) // Heap.n_buckets
                     self.buckets_used[y][x] = 1
                     self.buckets[y][x].data = obj
-                return self.buckets[x][y]
+                return self.buckets[y][x]
 
         raise BadAlloc
 
@@ -115,7 +115,8 @@ class Heap:
         fig.update_yaxes(
             showgrid=False,
             scaleanchor='x',
-            tickvals=list(range(Heap.n_rows + 1)),
+            tickvals=list(range(Heap.n_rows))[::-1],
+            ticktext=list(range(Heap.n_rows)),
 
         )
         fig.update_xaxes(
@@ -132,9 +133,9 @@ class Heap:
 
     def print(self):
         np.set_printoptions(linewidth=200)
-        x = np.where(self.buckets_used == 1, "x", ' ')
+        x = np.where(self.buckets_used == 1, "|x|", '| |')
         for row in x:
-            print(row)
+            print(str(row).replace("'", '').replace('[', '').replace(']', ''))
 
     def _start(self):
         for i in range(Heap.n_rows):
@@ -156,6 +157,21 @@ def delete(p):
     return heap.free(p)
 
 
+def simulate():
+    Heap.count = 1
+    vazio = []
+    vazio.extend((0, i) for i in (1, 3, 9, 11, 14, 15, 17, 18, 19))
+    vazio.extend((1, i) for i in (0, 4, 6, 8, 9, 12, 15, 18))
+    vazio.extend((2, i) for i in (0, 4, 6, 7, 8, 11, 14, 15, 18))
+    vazio.extend((3, i) for i in (5, 10, 11, 12, 14, 18))
+    vazio.extend((4, i) for i in (0, 1, 2, 4, 5, 9, 10, 13, 17, 18, 19))
+    for i in range(heap.n_rows):
+        for j in range(heap.n_buckets):
+            if (i, j) not in vazio:
+                heap.buckets_used[i][j] = 1
+                heap.buckets[i][j].id = 1
+
+
 def main():
     t1 = new(50, fit='first')
     print(t1)
@@ -170,4 +186,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    simulate()
+    new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='first')
+    new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='best')
+    heap.print()
+    heap.show2()
+
