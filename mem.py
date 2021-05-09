@@ -35,7 +35,7 @@ class Bucket:
 class Heap:
     count = 0
     n_rows = 5  # int(input("Number of rows: "))
-    n_buckets = 20  # int(input("Number of columns: "))
+    n_buckets = 10  # int(input("Number of columns: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -53,6 +53,30 @@ class Heap:
                         bucket.data = obj
                     return self.buckets[i][j]
         raise BadAlloc("Not enough space.")
+
+    def first(self, obj):
+        blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
+        i = 0
+        j = 0
+
+        sequence = []
+        for k in range(Heap.n_rows * Heap.n_buckets):
+            if self.buckets_used[i][j] == 0:
+                sequence.append((i, j))
+            else:
+                sequence = []
+
+            if len(sequence) >= blocks:
+                Heap.count += 1
+                for x, y in sequence:
+                    self.buckets_used[x][y] = 1
+                    self.buckets[x][y].data = obj
+                return self.buckets[sequence[0][0], sequence[0][1]]
+
+            j += 1
+            if j >= Heap.n_buckets:
+                j = 0
+                i += 1
 
     def free(self, p):
         blocks = math.ceil(sys.getsizeof(p.data.value) / Bucket.size)
@@ -82,7 +106,6 @@ class Heap:
         values = [a.data.value for a in address]
         tlabels = [a.type for a in address]
         zs = [str(a.id) for a in address]
-        print(zs)
 
         fig = go.Figure(go.Heatmap(
             x=xs,
@@ -142,7 +165,9 @@ def delete(p):
 
 
 def main():
-    t1 = new(50)
+    t1 = heap.first(list(range(15)))
+    t2 = heap.first(list(range(35)))
+    """t1 = new(50)
     print(t1)
     print(*t1)
     t3 = new("Hello World! Testing Block Sizes... This could take 3 blocks")
@@ -152,6 +177,7 @@ def main():
     delete(t4)
     t6 = new(200)
     heap.print()
+    heap.show2()"""
     heap.show2()
 
 

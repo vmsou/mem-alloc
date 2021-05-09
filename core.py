@@ -13,4 +13,4 @@ class Byte:
         return f"{hex(id(self))}: {self.value}"
 
 
-colors = ["blue"] + list(matplotlib.colors.cnames) + ["yellow"]
+colors = ["darkblue"] + list(matplotlib.colors.cnames) + ["yellow"]
