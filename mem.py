@@ -5,10 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 
-from core import BadAlloc, Byte, colors
+from core import BadAlloc, Byte, colors, confirm
 
 
 class Bucket:
+    # TODO: Change size so it won't be const static, so best and first can be differentiated
     size = 50
 
     def __init__(self):
@@ -35,8 +36,8 @@ class Bucket:
 
 class Heap:
     count = 0
-    n_rows = 5  # int(input("Number of rows: "))
-    n_buckets = 20  # int(input("Number of columns: "))
+    n_rows = confirm("Number of rows: ")
+    n_buckets = confirm("Number of columns: ")
     buckets = np.array([Bucket() for _ in range(n_rows * n_buckets)]).reshape((n_rows, n_buckets))
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -67,7 +68,13 @@ class Heap:
                     self.buckets[y][x].data = obj
                 return self.buckets[y][x]
 
-        raise BadAlloc
+        raise BadAlloc("Not enough space")
+
+    def best(self, obj):
+        pass
+
+    def worst(self, obj):
+        pass
 
     def free(self, p):
         # Separates id from objects
@@ -139,15 +146,18 @@ class Heap:
             print(str(row).replace("'", '').replace('[', '').replace(']', ''))
 
 
-
 heap = Heap()
 
 
 def new(obj, fit="best"):
     if fit == "best":
         return heap.allocate(obj)
-    if fit == "first":
+    elif fit == "first":
         return heap.first(obj)
+    elif fit == "worst":
+        return heap.worst(obj)
+    else:
+        raise NotImplementedError("fit type not found")
 
 
 def delete(p):
@@ -184,7 +194,7 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    simulate()
+    # simulate()
     new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='first')
     new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='best')
     heap.print()
