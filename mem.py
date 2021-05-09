@@ -140,14 +140,19 @@ def delete(p):
     return heap.free(p)
 
 
-t1 = new(50)
-print(t1)
-print(*t1)
-t3 = new("Hello World! Testing Block Sizes... This could take 3 blocks")
-t2 = new("Hello World")
-t4 = new([1, 2, 3, 4, 5, 6, 7, 8, 9])
-t5 = new(20)
-delete(t4)
-t6 = new(200)
-heap.print()
-heap.show2()
+def main():
+    t1 = new(50)
+    print(t1)
+    print(*t1)
+    t3 = new("Hello World! Testing Block Sizes... This could take 3 blocks")
+    t2 = new("Hello World")
+    t4 = new([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    t5 = new(20)
+    delete(t4)
+    t6 = new(200)
+    heap.print()
+    heap.show2()
+
+
+if __name__ == '__main__':
+    main()
