@@ -1,3 +1,4 @@
+import itertools
 import math
 import sys
 
@@ -56,18 +57,19 @@ class Heap:
 
     def first(self, obj):
         blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
-        xs = list(range(Heap.n_buckets)) * Heap.n_rows
-        ys = np.repeat(np.arange(Heap.n_rows), Heap.n_buckets)
-        points = list(zip(ys, xs))
+        print(blocks)
         used = self.buckets_used.flatten()
         for k in range(Heap.n_rows * Heap.n_buckets - blocks):
             if (used[k:k+blocks] == 0).all():
                 Heap.count += 1
-                for x, y in points[k:k+blocks]:
+                i = 0
+                for _ in range(blocks):
+                    x, y = np.unravel_index(k + i, (Heap.n_rows, Heap.n_buckets))
                     self.buckets_used[x][y] = 1
                     self.buckets[x][y].data = obj
+                    i += 1
 
-                return self.buckets[points[k][0]][points[k][1]]
+                return self.buckets[x][y]
 
     def free(self, p):
         blocks = math.ceil(sys.getsizeof(p.data.value) / Bucket.size)
