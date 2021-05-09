@@ -56,27 +56,18 @@ class Heap:
 
     def first(self, obj):
         blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
-        i = 0
-        j = 0
-
-        sequence = []
-        for k in range(Heap.n_rows * Heap.n_buckets):
-            if self.buckets_used[i][j] == 0:
-                sequence.append((i, j))
-            else:
-                sequence = []
-
-            if len(sequence) >= blocks:
+        xs = list(range(Heap.n_buckets)) * Heap.n_rows
+        ys = np.repeat(np.arange(Heap.n_rows), Heap.n_buckets)
+        points = list(zip(ys, xs))
+        used = self.buckets_used.flatten()
+        for k in range(Heap.n_rows * Heap.n_buckets - blocks):
+            if (used[k:k+blocks] == 0).all():
                 Heap.count += 1
-                for x, y in sequence:
+                for x, y in points[k:k+blocks]:
                     self.buckets_used[x][y] = 1
                     self.buckets[x][y].data = obj
-                return self.buckets[sequence[0][0], sequence[0][1]]
 
-            j += 1
-            if j >= Heap.n_buckets:
-                j = 0
-                i += 1
+                return self.buckets[points[k][0]][points[k][1]]
 
     def free(self, p):
         blocks = math.ceil(sys.getsizeof(p.data.value) / Bucket.size)
@@ -178,7 +169,7 @@ def main():
     t6 = new(200)
     heap.print()
     heap.show2()"""
-    heap.show2()
+    heap.print()
 
 
 if __name__ == '__main__':
