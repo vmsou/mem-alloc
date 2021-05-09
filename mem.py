@@ -1,12 +1,10 @@
-import sys
-
 import math
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-
-from core import BadAlloc, Byte
+from core import BadAlloc, Byte, colors
 
 
 class Bucket:
@@ -83,7 +81,8 @@ class Heap:
         address = Heap.buckets.flatten()
         values = [a.data.value for a in address]
         tlabels = [a.type for a in address]
-        zs = [a.id for a in address]
+        zs = [str(a.id) for a in address]
+        print(zs)
 
         fig = go.Figure(go.Heatmap(
             x=xs,
@@ -94,10 +93,12 @@ class Heap:
             <extra>%{customdata}</extra>
             """,
             customdata=tlabels,
+            colorscale=colors,
             text=[f'Address: {a}\t\t<i><b>Value</b></i>: {v}' for a, v in zip(address, values)],
             showlegend=False,
             xgap=1,
             ygap=1,
+            showscale=False,
         ))
         fig.update_yaxes(
             showgrid=False,

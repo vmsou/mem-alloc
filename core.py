@@ -1,3 +1,6 @@
+import matplotlib.colors
+
+
 class BadAlloc(Exception):
     pass
 
@@ -8,3 +11,6 @@ class Byte:
 
     def __repr__(self):
         return f"{hex(id(self))}: {self.value}"
+
+
+colors = ["blue"] + list(matplotlib.colors.cnames) + ["yellow"]
