@@ -90,7 +90,7 @@ class Heap:
 
     def show2(self):
         xs = list(range(Heap.n_buckets)) * Heap.n_rows
-        ys = np.repeat(np.arange(Heap.n_rows), Heap.n_buckets)[::-1]
+        ys = np.repeat(np.arange(Heap.n_rows - 1, -1, -1), Heap.n_buckets)
         address = Heap.buckets.flatten()
         values = [a.data.value for a in address]
         tlabels = [a.type for a in address]
