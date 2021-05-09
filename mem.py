@@ -28,7 +28,7 @@ class Bucket:
 
     @data.setter
     def data(self, value):
-        self.data.value = value  # Bucket.data = 1
+        self.data.value = value
         self.type = type(value).__name__
         self.id = Heap.count
 
@@ -37,11 +37,8 @@ class Heap:
     count = 0
     n_rows = 5  # int(input("Number of rows: "))
     n_buckets = 20  # int(input("Number of columns: "))
-    buckets = np.ndarray((n_rows, n_buckets), dtype=object)
+    buckets = np.array([Bucket() for _ in range(n_rows * n_buckets)]).reshape((n_rows, n_buckets))
     buckets_used = np.zeros((n_rows, n_buckets))
-
-    def __init__(self):
-        self._start()
 
     def allocate(self, obj):
         blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
@@ -63,6 +60,7 @@ class Heap:
                 Heap.count += 1
                 x, y = 0, 0
                 for i in range(blocks - 1, -1, -1):
+                    # Converts flatten index to matrix index
                     x = (k + i) % Heap.n_buckets
                     y = (k + i) // Heap.n_buckets
                     self.buckets_used[y][x] = 1
@@ -72,11 +70,14 @@ class Heap:
         raise BadAlloc
 
     def free(self, p):
+        # Separates id from objects
         a = np.fromiter((a.id for a in Heap.buckets.flatten()), dtype=int)
+        # Get only Bucket() object that matches id
         bs = np.extract(a == p.id, Heap.buckets.flatten())
+        # Get flatten index from matrix
         c = np.extract(a == p.id, np.arange(Heap.n_rows * Heap.n_buckets))
         for i, b in zip(c, bs):
-            Heap.buckets_used[i // Heap.n_buckets][i % Heap.n_buckets] = 0
+            Heap.buckets_used[i // Heap.n_buckets][i % Heap.n_buckets] = 0  # flatten index converted to matrix index
             b.id = 0
             b.type = "void"
         return
@@ -137,10 +138,6 @@ class Heap:
         for row in x:
             print(str(row).replace("'", '').replace('[', '').replace(']', ''))
 
-    def _start(self):
-        for i in range(Heap.n_rows):
-            for j in range(Heap.n_buckets):
-                Heap.buckets[i][j] = Bucket()
 
 
 heap = Heap()
