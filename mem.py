@@ -7,8 +7,6 @@ import plotly.graph_objects as go
 
 from core import BadAlloc, Byte
 
-colors = {"void": 0, "str": 1, 'int': 2}
-
 
 class Bucket:
     size = 50
@@ -16,7 +14,7 @@ class Bucket:
     def __init__(self):
         self._data = Byte()
         self.type = "void"
-        self.color = 0
+        self.id = 0
 
     def __repr__(self):
         return f"{hex(id(self))}"
@@ -32,13 +30,13 @@ class Bucket:
     def data(self, value):
         self.data.value = value
         self.type = type(value).__name__
-        self.color = Heap.count
+        self.id = Heap.count
 
 
 class Heap:
     count = 0
-    n_buckets = 10  # int(input("Number of columns: "))
-    n_rows = 10  # int(input("Number of rows: "))
+    n_buckets = 40  # int(input("Number of columns: "))
+    n_rows = 20  # int(input("Number of rows: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -48,7 +46,7 @@ class Heap:
     def allocate(self, obj):
         blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
         for i in range(Heap.n_rows):
-            for j in range(Heap.n_buckets - blocks):
+            for j in range(Heap.n_buckets):
                 if (self.buckets_used[i][j:j+blocks] == 0).all():
                     Heap.count += 1
                     self.buckets_used[i][j:j+blocks] = 1
@@ -58,12 +56,17 @@ class Heap:
         raise BadAlloc("Not enough space.")
 
     def free(self, p):
+        blocks = math.ceil(sys.getsizeof(p.data.value) / Bucket.size)
+        tmp = p.id
         for i in range(Heap.n_rows):
             for j in range(Heap.n_buckets):
-                if self.buckets[j][i] == p:
-                    self.buckets_used[j][i] = 0
-                    self.buckets[j][i].color = 0
-                    return
+                if self.buckets[i][j].id == tmp:
+                    self.buckets_used[i][j] = 0
+                    self.buckets[i][j].id = 0
+                    self.buckets[i][j].type = "void"
+                    blocks -= 1
+                    if blocks <= 0:
+                        return
 
     def show(self):
         fig, ax = plt.subplots()
@@ -79,7 +82,7 @@ class Heap:
         address = [Heap.buckets[i][j] for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
         values = [a.data.value for a in address]
         tlabels = [a.type for a in address]
-        zs = [a.color for a in address]
+        zs = [a.id for a in address]
 
         fig = go.Figure(go.Heatmap(
             x=xs,
@@ -108,7 +111,7 @@ class Heap:
         fig.update_layout(
             hoverlabel_align='auto',
             title="Alocação de Memória",
-            #width=Heap.n_buckets * 1840 / 40, height=Heap.n_rows * 1000 / 20,
+            # width=Heap.n_buckets * 1840 / 40, height=Heap.n_rows * 1000 / 20,
             autosize=True,
         )
         fig.show()
@@ -130,8 +133,12 @@ def delete(p):
     return heap.free(p)
 
 
-t = new(50)
-t2 = new("Hello World")
+t1 = new(50)
 t3 = new("Hello World! Testing Block Sizes... This could take 3 blocks")
-delete(t)
+t2 = new("Hello World")
+t4 = new([1, 2, 3, 4, 5, 6, 7, 8, 9])
+t5 = new(20)
+delete(t4)
+print(t4)
+t6 = new(200)
 heap.show2()
