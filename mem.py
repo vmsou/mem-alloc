@@ -1,7 +1,8 @@
 import sys
 
-import numpy as np
 import math
+
+import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 
@@ -28,7 +29,7 @@ class Bucket:
 
     @data.setter
     def data(self, value):
-        self.data.value = value
+        self.data.value = value  # Bucket.data = 1
         self.type = type(value).__name__
         self.id = Heap.count
 
@@ -50,8 +51,8 @@ class Heap:
                 if (self.buckets_used[i][j:j+blocks] == 0).all():
                     Heap.count += 1
                     self.buckets_used[i][j:j+blocks] = 1
-                    for k in range(blocks):
-                        self.buckets[i][j+k].data = obj
+                    for bucket in self.buckets[i][j:j+blocks]:
+                        bucket.data = obj
                     return self.buckets[i][j]
         raise BadAlloc("Not enough space.")
 
@@ -60,13 +61,14 @@ class Heap:
         tmp = p.id
         for i in range(Heap.n_rows):
             for j in range(Heap.n_buckets):
-                if self.buckets[i][j].id == tmp:
-                    self.buckets_used[i][j] = 0
-                    self.buckets[i][j].id = 0
-                    self.buckets[i][j].type = "void"
-                    blocks -= 1
-                    if blocks <= 0:
-                        return
+                if self.buckets_used[i][j]:
+                    if self.buckets[i][j].id == tmp:
+                        self.buckets_used[i][j] = 0
+                        self.buckets[i][j].id = 0
+                        self.buckets[i][j].type = "void"
+                        blocks -= 1
+                        if blocks <= 0:
+                            return
 
     def show(self):
         fig, ax = plt.subplots()
@@ -77,9 +79,8 @@ class Heap:
 
     def show2(self):
         xs = list(range(Heap.n_buckets)) * Heap.n_rows
-        ys = [y for y in range(Heap.n_rows) for _ in range(Heap.n_buckets)][::-1]
-        # zs = [Heap.buckets_used[i][j] for i in range(Heap.n_buckets) for j in range(Heap.n_rows)]
-        address = [Heap.buckets[i][j] for i in range(Heap.n_rows) for j in range(Heap.n_buckets)]
+        ys = np.repeat(np.arange(Heap.n_rows), Heap.n_buckets)[::-1]
+        address = Heap.buckets.flatten()
         values = [a.data.value for a in address]
         tlabels = [a.type for a in address]
         zs = [a.id for a in address]
@@ -140,6 +141,8 @@ def delete(p):
 
 
 t1 = new(50)
+print(t1)
+print(*t1)
 t3 = new("Hello World! Testing Block Sizes... This could take 3 blocks")
 t2 = new("Hello World")
 t4 = new([1, 2, 3, 4, 5, 6, 7, 8, 9])
@@ -147,3 +150,4 @@ t5 = new(20)
 delete(t4)
 t6 = new(200)
 heap.print()
+heap.show2()
