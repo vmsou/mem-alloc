@@ -35,8 +35,8 @@ class Bucket:
 
 class Heap:
     count = 0
-    n_buckets = 40  # int(input("Number of columns: "))
-    n_rows = 20  # int(input("Number of rows: "))
+    n_rows = 5  # int(input("Number of rows: "))
+    n_buckets = 20  # int(input("Number of columns: "))
     buckets = np.ndarray((n_rows, n_buckets), dtype=object)
     buckets_used = np.zeros((n_rows, n_buckets))
 
@@ -116,6 +116,12 @@ class Heap:
         )
         fig.show()
 
+    def print(self):
+        np.set_printoptions(linewidth=200)
+        x = np.where(self.buckets_used == 1, "x", ' ')
+        for row in x:
+            print(row)
+
     def _start(self):
         for i in range(Heap.n_rows):
             for j in range(Heap.n_buckets):
@@ -139,6 +145,5 @@ t2 = new("Hello World")
 t4 = new([1, 2, 3, 4, 5, 6, 7, 8, 9])
 t5 = new(20)
 delete(t4)
-print(t4)
 t6 = new(200)
-heap.show2()
+heap.print()
