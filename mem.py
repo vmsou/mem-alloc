@@ -41,8 +41,11 @@ class Heap:
     buckets = np.array([Bucket() for _ in range(n_rows * n_buckets)]).reshape((n_rows, n_buckets))
     buckets_used = np.zeros((n_rows, n_buckets))
 
-    def allocate(self, obj):
-        blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
+    def allocate(self, obj, force_size=0):
+        blocks = force_size
+        if not force_size or not isinstance(force_size, int):
+            blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
+
         for i in range(Heap.n_rows):
             for j in range(Heap.n_buckets):
                 if (self.buckets_used[i][j:j+blocks] == 0).all():
@@ -149,9 +152,9 @@ class Heap:
 heap = Heap()
 
 
-def new(obj, fit="best"):
+def new(obj, fit="best", force_size=None):
     if fit == "best":
-        return heap.allocate(obj)
+        return heap.allocate(obj, force_size)
     elif fit == "first":
         return heap.first(obj)
     elif fit == "worst":
@@ -194,9 +197,10 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    # simulate()
-    new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='first')
-    new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='best')
+    simulate()
+    t = new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='first')
+    new(25)
+    delete(t)
     heap.print()
     heap.show2()
 
