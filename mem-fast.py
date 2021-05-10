@@ -22,7 +22,7 @@ class Heap:
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / block_size)
 
-        for k in np.extract(self.buckets_used == 0, self.b):
+        for k in (i for i in self.b if not self.buckets_used.flat[i]):
             ind = np.unravel_index((range(k, k+blocks)), (Heap.n_rows, Heap.n_buckets))
             if (self.buckets_used[ind] == 0).all():
                 self.buckets_used[ind] = 1
@@ -67,3 +67,4 @@ for i in range(1000):
 
 print(f"{perf_counter() - start}s")
 heap.print()
+print(heap.buckets_used.sum())
