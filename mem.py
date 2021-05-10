@@ -200,11 +200,8 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    #simulate()
-    #t = new(50, force_size=4, fit='first')
-    print("aqui")
-    #i = int(input("Linha: "))
-    #j = int(input("Coluna: "))
-    #delete(heap.buckets[i][j])
+   for _ in range(heap.n_rows * heap.n_buckets):
+       new(5, 'best')
+   heap.print()
+
 
