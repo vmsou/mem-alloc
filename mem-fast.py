@@ -4,7 +4,7 @@ from time import perf_counter
 
 import matplotlib.pyplot as plt
 import numpy as np
-import random
+from functools import cache
 
 from core import confirm, BadAlloc
 
@@ -15,16 +15,14 @@ class Heap:
     n_rows = confirm("Number of rows: ")
     n_buckets = confirm("Number of columns: ")
     buckets_used = np.zeros((n_rows, n_buckets))
+    b = np.arange(n_rows * n_buckets)
 
     def first(self, obj, force_size=None):
         blocks = force_size
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / block_size)
 
-        if (self.buckets_used == 0).sum() < blocks:
-            raise BadAlloc
-
-        for k in range(Heap.n_rows * Heap.n_buckets):
+        for k in np.extract(self.buckets_used == 0, self.b):
             ind = np.unravel_index((range(k, k+blocks)), (Heap.n_rows, Heap.n_buckets))
             if (self.buckets_used[ind] == 0).all():
                 self.buckets_used[ind] = 1
@@ -64,9 +62,8 @@ def new(obj, fit="first", force_size=None):
 
 
 start = perf_counter()
-for i in range(100):
+for i in range(1000):
     new(5)
 
-print(heap.buckets_used[((0, 0), (0, 1))])
 print(f"{perf_counter() - start}s")
 heap.print()
