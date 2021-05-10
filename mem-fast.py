@@ -13,19 +13,19 @@ block_size = 50
 
 class Heap:
     n_rows = confirm("Number of rows: ")
-    n_buckets = confirm("Number of columns: ")
-    buckets_used = np.zeros((n_rows, n_buckets))
-    b = np.arange(n_rows * n_buckets)
+    n_blocks = confirm("Number of columns: ")
+    blocks_used = np.zeros((n_rows, n_blocks), dtype=bool)
+    b = range(n_rows * n_blocks)
 
     def first(self, obj, force_size=None):
         blocks = force_size
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / block_size)
 
-        for k in (i for i in self.b if not self.buckets_used.flat[i]):
-            ind = np.unravel_index((range(k, k+blocks)), (Heap.n_rows, Heap.n_buckets))
-            if (self.buckets_used[ind] == 0).all():
-                self.buckets_used[ind] = 1
+        for k in (i for i in self.b if not self.blocks_used.flat[i]):
+            ind = np.unravel_index((range(k, k + blocks)), (Heap.n_rows, Heap.n_blocks))
+            if (self.blocks_used[ind] == False).all():
+                self.blocks_used[ind] = True
                 """
                 for i in range(blocks - 1, -1, -1):
                     # Converts flatten index to matrix index
@@ -39,15 +39,19 @@ class Heap:
 
     def show(self):
         fig, ax = plt.subplots()
-        im = ax.imshow(Heap.buckets_used)
+        im = ax.imshow(Heap.blocks_used)
         ax.set_title("Allocated Memory")
         fig.tight_layout()
         plt.show()
 
     def print(self):
         np.set_printoptions(linewidth=400)
-        x = np.where(self.buckets_used == 1, "|x|", '| |')
-        print(x)
+        x = np.where(self.blocks_used == 1, "|x|", '| |')
+        if self.n_blocks > 100 or self.n_rows > 100:
+            print(x)
+        else:
+            for row in x:
+                print(str(row).replace("'", '').replace('[', '').replace(']', ''))
         print()
 
     def flat_to_2D(self, index, columns):
@@ -62,9 +66,10 @@ def new(obj, fit="first", force_size=None):
 
 
 start = perf_counter()
-for i in range(1000):
-    new(5)
+
+for _ in range(2000):
+    new(5, force_size=5)
 
 print(f"{perf_counter() - start}s")
-heap.print()
-print(heap.buckets_used.sum())
+# heap.print()
+# print(heap.blocks_used.sum())
