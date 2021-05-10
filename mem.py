@@ -41,7 +41,8 @@ class Heap:
     buckets = np.array([Bucket() for _ in range(n_rows * n_buckets)]).reshape((n_rows, n_buckets))
     buckets_used = np.zeros((n_rows, n_buckets))
 
-    def allocate(self, obj, force_size=0):
+    def allocate(self, obj, force_size=None):
+        # TODO: fix continuous
         blocks = force_size
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
@@ -56,8 +57,10 @@ class Heap:
                     return self.buckets[i][j]
         raise BadAlloc("Not enough space.")
 
-    def first(self, obj):
-        blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
+    def first(self, obj, force_size=None):
+        blocks = force_size
+        if not force_size or not isinstance(force_size, int):
+            blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
         used = self.buckets_used.flatten()
         for k in range(Heap.n_rows * Heap.n_buckets - blocks):
             if (used[k:k+blocks] == 0).all():
@@ -147,6 +150,7 @@ class Heap:
         x = np.where(self.buckets_used == 1, "|x|", '| |')
         for row in x:
             print(str(row).replace("'", '').replace('[', '').replace(']', ''))
+        print()
 
 
 heap = Heap()
@@ -156,7 +160,7 @@ def new(obj, fit="best", force_size=None):
     if fit == "best":
         return heap.allocate(obj, force_size)
     elif fit == "first":
-        return heap.first(obj)
+        return heap.first(obj, force_size)
     elif fit == "worst":
         return heap.worst(obj)
     else:
@@ -198,11 +202,11 @@ def main():
 if __name__ == '__main__':
     # main()
     simulate()
-    t = new(50, force_size=3)
-    new(25)
     heap.print()
-    i = int(input("Linha: "))
-    j = int(input("Coluna: "))
-    delete(heap.buckets[i][j])
+    t = new(50, force_size=4, fit='first')
     heap.print()
+    #i = int(input("Linha: "))
+    #j = int(input("Coluna: "))
+    #delete(heap.buckets[i][j])
+    heap.show2()
 
