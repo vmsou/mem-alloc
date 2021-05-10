@@ -26,8 +26,6 @@ class Heap:
 
         for k in range(Heap.n_rows * Heap.n_buckets):
             ind = np.unravel_index((range(k, k+blocks)), (Heap.n_rows, Heap.n_buckets))
-            if len(ind) == 2:
-                ind = (ind[0], ind[1])
             if (self.buckets_used[ind] == 0).all():
                 self.buckets_used[ind] = 1
                 """
@@ -66,8 +64,9 @@ def new(obj, fit="first", force_size=None):
 
 
 start = perf_counter()
-for _ in range(heap.n_rows * heap.n_buckets):
+for i in range(100):
     new(5)
 
+print(heap.buckets_used[((0, 0), (0, 1))])
 print(f"{perf_counter() - start}s")
 heap.print()
