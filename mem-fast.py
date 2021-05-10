@@ -4,7 +4,6 @@ from time import perf_counter
 
 import matplotlib.pyplot as plt
 import numpy as np
-from functools import cache
 
 from core import confirm, BadAlloc
 
@@ -16,6 +15,9 @@ class Heap:
     n_blocks = confirm("Number of columns: ")
     blocks_used = np.zeros((n_rows, n_blocks), dtype=bool)
     b = range(n_rows * n_blocks)
+
+    def __init__(self):
+        np.set_printoptions(linewidth=400)
 
     def first(self, obj, force_size=None):
         blocks = force_size
@@ -45,7 +47,6 @@ class Heap:
         plt.show()
 
     def print(self):
-        np.set_printoptions(linewidth=400)
         x = np.where(self.blocks_used == 1, "|x|", '| |')
         if self.n_blocks > 100 or self.n_rows > 100:
             print(x)
@@ -67,9 +68,12 @@ def new(obj, fit="first", force_size=None):
 
 start = perf_counter()
 
-for _ in range(2000):
-    new(5, force_size=5)
+for _ in range(1000):
+    new(5)
 
 print(f"{perf_counter() - start}s")
 # heap.print()
 # print(heap.blocks_used.sum())
+
+# python mem-fast.py build_ext --inplace
+

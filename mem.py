@@ -1,5 +1,6 @@
 import math
 import sys
+from time import perf_counter
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,7 +40,11 @@ class Heap:
     n_rows = confirm("Number of rows: ")
     n_buckets = confirm("Number of columns: ")
     buckets = np.array([Bucket() for _ in range(n_rows * n_buckets)]).reshape((n_rows, n_buckets))
-    buckets_used = np.zeros((n_rows, n_buckets))
+    buckets_used = np.zeros((n_rows, n_buckets), dtype=bool)
+    b = range(n_rows * n_buckets)
+
+    def __init__(self):
+        np.set_printoptions(linewidth=400)
 
     def allocate(self, obj, force_size=None):
         # TODO: fix continuous
@@ -61,18 +66,15 @@ class Heap:
         blocks = force_size
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / Bucket.size)
-        used = self.buckets_used.flatten()
-        for k in range(Heap.n_rows * Heap.n_buckets - blocks):
-            if (used[k:k+blocks] == 0).all():
+
+        for k in (i for i in self.b if not self.buckets_used.flat[i]):
+            ind = np.unravel_index((range(k, k + blocks)), (Heap.n_rows, Heap.n_buckets))
+            if (self.buckets_used[ind] == False).all():
                 Heap.count += 1
-                x, y = 0, 0
-                for i in range(blocks - 1, -1, -1):
-                    # Converts flatten index to matrix index
-                    x = (k + i) % Heap.n_buckets
-                    y = (k + i) // Heap.n_buckets
-                    self.buckets_used[y][x] = 1
-                    self.buckets[y][x].data = obj
-                return self.buckets[y][x]
+                self.buckets_used[ind] = True
+                for i, j in zip(ind[0], ind[1]):
+                    self.buckets[i][j].data = obj
+                return self.buckets[i][j]
 
         raise BadAlloc("Not enough space")
 
@@ -146,10 +148,12 @@ class Heap:
         fig.show()
 
     def print(self):
-        np.set_printoptions(linewidth=200)
         x = np.where(self.buckets_used == 1, "|x|", '| |')
-        for row in x:
-            print(str(row).replace("'", '').replace('[', '').replace(']', ''))
+        if self.n_buckets > 50 or self.n_rows > 50:
+            print(x)
+        else:
+            for row in x:
+                print(str(row).replace("'", '').replace('[', '').replace(']', ''))
         print()
 
 
@@ -200,8 +204,10 @@ def main():
 
 
 if __name__ == '__main__':
-   for _ in range(heap.n_rows * heap.n_buckets):
-       new(5, 'best')
-   heap.print()
+    start = perf_counter()
+    for _ in range(500):
+        new(5, 'first')
+    print(f"{perf_counter() - start}s")
+    # heap.print()
 
 
