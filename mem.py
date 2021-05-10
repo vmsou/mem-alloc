@@ -201,12 +201,10 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    simulate()
-    heap.print()
-    t = new(50, force_size=4, fit='first')
-    heap.print()
+    #simulate()
+    #t = new(50, force_size=4, fit='first')
+    print("aqui")
     #i = int(input("Linha: "))
     #j = int(input("Coluna: "))
     #delete(heap.buckets[i][j])
-    heap.show2()
 
