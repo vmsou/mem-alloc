@@ -26,8 +26,7 @@ class Heap:
                 Heap.count += 1
                 for i in range(blocks - 1, -1, -1):
                     # Converts flatten index to matrix index
-                    x = (k + i) % Heap.n_buckets
-                    y = (k + i) // Heap.n_buckets
+                    x, y = self.flat_to_2D(k + i, self.n_buckets)
                     self.buckets_used[y][x] = 1
                 return
 
@@ -47,8 +46,11 @@ class Heap:
             print(str(row).replace("'", '').replace('[', '').replace(']', ''))
         print()
 
+    def flat_to_2D(self, index, columns):
+        return index % columns, index // columns
+
 
 heap = Heap()
-heap.first(5, 5000 * 5000 - 1)
+heap.buckets_used[0:5000][0:5000] = 1
 heap.print()
 
