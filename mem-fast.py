@@ -21,14 +21,11 @@ class Heap:
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / block_size)
 
-        used = self.buckets_used.flatten()
         for k in range(Heap.n_rows * Heap.n_buckets):
-            if (used[k:k+blocks] == 0).all():
+            ind = np.unravel_index((range(k, k+blocks)), (Heap.n_rows, Heap.n_buckets))
+            if (self.buckets_used[ind] == 0).all():
                 Heap.count += 1
-
-                p = np.unravel_index((range(k, k+blocks)), (Heap.n_rows, Heap.n_buckets))
-                for y, x in zip(p[0], p[1]):
-                    self.buckets_used[y][x] = 1
+                self.buckets_used[ind] = 1
 
                 """
                 for i in range(blocks - 1, -1, -1):
@@ -49,16 +46,23 @@ class Heap:
         plt.show()
 
     def print(self):
-        np.set_printoptions(linewidth=50)
+        np.set_printoptions(linewidth=400)
         x = np.where(self.buckets_used == 1, "|x|", '| |')
         print(x)
+        print()
 
     def flat_to_2D(self, index, columns):
         return index % columns, index // columns
 
 
 heap = Heap()
+
+
+def new(obj, fit="first", force_size=None):
+    return heap.first(obj, force_size)
+
+
 start = perf_counter()
-heap.first(5, Heap.n_rows * Heap.n_buckets)
+new(5, 'first', heap.n_rows * heap.n_buckets)
 print(f"{perf_counter() - start}s")
-heap.print()
+print(heap.print())
