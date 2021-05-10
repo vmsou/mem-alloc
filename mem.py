@@ -9,7 +9,7 @@ from core import BadAlloc, Byte, colors, confirm
 
 
 class Bucket:
-    # TODO: Change size so it won't be const static, so best and first can be differentiated
+    # TODO: Change size so it won't be const static, so best fit and first fit can be differentiated
     size = 50
 
     def __init__(self):
@@ -198,9 +198,11 @@ def main():
 if __name__ == '__main__':
     # main()
     simulate()
-    t = new("Hello World! Testing Block Sizes... This could take 3 blocks", fit='first')
+    t = new(50, force_size=3)
     new(25)
-    delete(t)
     heap.print()
-    heap.show2()
+    i = int(input("Linha: "))
+    j = int(input("Coluna: "))
+    delete(heap.buckets[i][j])
+    heap.print()
 
