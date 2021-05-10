@@ -1,5 +1,6 @@
 import math
 import sys
+from time import perf_counter, sleep
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,13 +22,21 @@ class Heap:
             blocks = math.ceil(sys.getsizeof(obj) / block_size)
 
         used = self.buckets_used.flatten()
-        for k in range(Heap.n_rows * Heap.n_buckets - blocks):
+        for k in range(Heap.n_rows * Heap.n_buckets):
             if (used[k:k+blocks] == 0).all():
                 Heap.count += 1
+
+                p = np.unravel_index((range(k, k+blocks)), (Heap.n_rows, Heap.n_buckets))
+                for y, x in zip(p[0], p[1]):
+                    self.buckets_used[y][x] = 1
+
+                """
                 for i in range(blocks - 1, -1, -1):
                     # Converts flatten index to matrix index
-                    x, y = self.flat_to_2D(k + i, self.n_buckets)
+                    # x, y = self.flat_to_2D(k + i, self.n_buckets)
+                    x, y = np.unravel_index(k + i, (Heap.n_rows, Heap.n_buckets))
                     self.buckets_used[y][x] = 1
+                """
                 return
 
         raise BadAlloc
@@ -40,17 +49,16 @@ class Heap:
         plt.show()
 
     def print(self):
-        np.set_printoptions(linewidth=5000)
+        np.set_printoptions(linewidth=50)
         x = np.where(self.buckets_used == 1, "|x|", '| |')
-        for row in x:
-            print(str(row).replace("'", '').replace('[', '').replace(']', ''))
-        print()
+        print(x)
 
     def flat_to_2D(self, index, columns):
         return index % columns, index // columns
 
 
 heap = Heap()
-heap.buckets_used[0:5000][0:5000] = 1
+start = perf_counter()
+heap.first(5, Heap.n_rows * Heap.n_buckets)
+print(f"{perf_counter() - start}s")
 heap.print()
-
