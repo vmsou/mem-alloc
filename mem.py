@@ -1,6 +1,5 @@
 import math
 import sys
-from time import perf_counter
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -86,9 +85,9 @@ class Heap:
 
     def free(self, p):
         # Separates id from objects
-        a = np.fromiter((a.id for a in Heap.buckets.flatten()), dtype=int)
+        a = np.fromiter((a.id for a in Heap.buckets.flat), dtype=int)
         # Get only Bucket() object that matches id
-        bs = np.extract(a == p.id, Heap.buckets.flatten())
+        bs = np.extract(a == p.id, Heap.buckets.flat)
         # Get flatten index from matrix
         c = np.extract(a == p.id, np.arange(Heap.n_rows * Heap.n_buckets))
         for i, b in zip(c, bs):
@@ -99,7 +98,8 @@ class Heap:
 
     def show(self):
         fig, ax = plt.subplots()
-        im = ax.imshow(Heap.buckets_used)
+        a = np.fromiter((a.id for a in heap.buckets.flat), dtype=int).reshape((self.n_rows, self.n_buckets))
+        im = ax.imshow(a)
         ax.set_title("Allocated Memory")
         fig.tight_layout()
         plt.show()
@@ -160,7 +160,7 @@ class Heap:
 heap = Heap()
 
 
-def new(obj, fit="best", force_size=None):
+def new(obj, fit="first", force_size=None):
     if fit == "best":
         return heap.allocate(obj, force_size)
     elif fit == "first":
@@ -204,10 +204,8 @@ def main():
 
 
 if __name__ == '__main__':
-    start = perf_counter()
-    for _ in range(500):
-        new(5, 'first')
-    print(f"{perf_counter() - start}s")
-    # heap.print()
+    for i in range(3):
+        new(5 * i)
+    heap.show()
 
 
