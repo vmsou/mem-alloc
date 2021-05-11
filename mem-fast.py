@@ -36,7 +36,7 @@ class Heap:
                     x, y = np.unravel_index(k + i, (Heap.n_rows, Heap.n_buckets))
                     self.buckets_used[y][x] = 1
                 """
-                return used
+                return
 
         raise BadAlloc
 
@@ -68,7 +68,7 @@ def new(obj, fit="first", force_size=None):
 
 
 start = perf_counter()
-for _ in range(10000):
+for _ in range(9):
     new(5)
 
 print(f"{perf_counter() - start}s")
