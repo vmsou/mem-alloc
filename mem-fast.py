@@ -68,7 +68,7 @@ def new(obj, fit="first", force_size=None):
 
 
 start = perf_counter()
-for _ in range(9):
+for _ in range(100000):
     new(5)
 
 print(f"{perf_counter() - start}s")
