@@ -1,14 +1,21 @@
 from ctypes import *
 from time import perf_counter
 import numpy as np
+from pathlib import Path
 
-lib = cdll.LoadLibrary(r'D:\Documentos\1.Projetos\Python\mem-alloc\cpp\libtest.so')
+p = Path().absolute() / 'cpp' / 'libtest.so'
+lib = cdll.LoadLibrary(str(p))
+
+# Functions
 first = lib.first
-first.argtypes = [c_void_p, c_int, c_int, c_int]
-first.restype = c_int
-
 multi_first = lib.alloc
+
+# Argument Types
+first.argtypes = [c_void_p, c_int, c_int, c_int]
 multi_first.argtypes = [c_void_p, c_int, c_int, c_int, c_int]
+
+# Return types
+first.restype = c_int
 
 
 def main():
