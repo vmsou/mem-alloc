@@ -1,5 +1,5 @@
 extern "C" {
-    int first(void* indatav, int blocks, int rows, int columns) {
+    int first(const void* indatav, const int blocks, const int rows, const int columns) {
         bool* indata = (bool*) indatav;
         int count = 0;
         for (int i = 0; i < rows * columns; i++) {
@@ -17,7 +17,7 @@ extern "C" {
         return count;
     }
 
-    void alloc(void* indatav, int n, int blocks, int rows, int columns) {
+    void alloc(const void* indatav, const int n, const int blocks, const int rows, const int columns) {
         for (int i = 0; i < n; i++) {
             first(indatav, blocks, rows, columns);
         }

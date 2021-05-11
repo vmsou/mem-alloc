@@ -72,7 +72,7 @@ start = perf_counter()
 #for _ in range(10000):
 #    new(5)
 
-cpp.multi_first(heap.blocks_used.ctypes.data, 10000, 1, heap.n_rows, heap.n_blocks)
+cpp.multi_first(heap.blocks_used.ctypes.data, 100000, 1, heap.n_rows, heap.n_blocks)
 print(f"{perf_counter() - start}s")
 
 print(heap.blocks_used.sum())
