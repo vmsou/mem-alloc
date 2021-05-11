@@ -29,7 +29,7 @@ def main():
 
     start = perf_counter()
     # count = first(indata.ctypes.data, blocks, rows, columns)
-    multi_first(indata.ctypes.data, 10000, blocks, rows, columns)
+    multi_first(indata.ctypes.data, 50000, blocks, rows, columns)
     print(f"{perf_counter() - start}s")
 
     print(indata.astype(c_int))
