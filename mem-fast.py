@@ -68,16 +68,18 @@ def new(obj, fit="first", force_size=None):
     return heap.first(obj, force_size)
 
 
+n = confirm("Number of allocs: ")
 start = perf_counter()
-#for _ in range(10000):
-#    new(5)
 
-cpp.multi_first(heap.blocks_used.ctypes.data, 10000, 1, heap.n_rows, heap.n_blocks)
-print(f"{perf_counter() - start}s")
+for _ in range(10000):
+    new(5)
+
+print(f"[Python] {perf_counter() - start}s")
+
+heap.blocks_used[:][:] = 0
+
+start = perf_counter()
+cpp.multi_first(heap.blocks_used.ctypes.data, n, 1, heap.n_rows, heap.n_blocks)
+print(f"[C++] {perf_counter() - start}s")
 
 print(heap.blocks_used.sum())
-# heap.print()
-# print(heap.blocks_used.sum())
-
-# python mem-fast.py build_ext --inplace
-
