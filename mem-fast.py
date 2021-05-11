@@ -24,7 +24,8 @@ class Heap:
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / block_size)
 
-        for k in (i for i in self.b if not self.blocks_used.flat[i]):
+        used = Heap.blocks_used.flat
+        for k in (i for i in self.b if not used[i]):
             ind = np.unravel_index((range(k, k + blocks)), (Heap.n_rows, Heap.n_blocks))
             if (self.blocks_used[ind] == False).all():
                 self.blocks_used[ind] = True
@@ -35,7 +36,7 @@ class Heap:
                     x, y = np.unravel_index(k + i, (Heap.n_rows, Heap.n_buckets))
                     self.buckets_used[y][x] = 1
                 """
-                return
+                return used
 
         raise BadAlloc
 
@@ -67,11 +68,12 @@ def new(obj, fit="first", force_size=None):
 
 
 start = perf_counter()
-
-for _ in range(1000):
+for _ in range(10000):
     new(5)
 
 print(f"{perf_counter() - start}s")
+
+print(heap.blocks_used.sum())
 # heap.print()
 # print(heap.blocks_used.sum())
 
