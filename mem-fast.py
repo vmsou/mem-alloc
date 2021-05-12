@@ -46,7 +46,7 @@ class Heap:
         if not force_size or not isinstance(force_size, int):
             blocks = math.ceil(sys.getsizeof(obj) / block_size)
 
-        count = cpp.first(Heap.blocks_used.ctypes.data, blocks, Heap.n_rows * Heap.n_blocks)
+        count = cpp.first(Heap.blocks_used, blocks, Heap.n_rows * Heap.n_blocks)
         if count != blocks:
             raise BadAlloc("Not enough space")
 
@@ -89,7 +89,7 @@ def main():
     heap.blocks_used[:][:] = 0
 
     start = perf_counter()
-    cpp.multi_first(heap.blocks_used.ctypes.data, n, 1, heap.n_rows * heap.n_blocks)
+    cpp.multi_first(heap.blocks_used, n, 1, heap.n_rows * heap.n_blocks)
     print(f"[C] {perf_counter() - start}s")
     print(heap.blocks_used.sum())
 

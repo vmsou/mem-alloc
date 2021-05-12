@@ -7,15 +7,23 @@ p = Path().absolute() / 'cpp' / 'libtest.so'
 lib = cdll.LoadLibrary(str(p))
 
 # Functions
-first = lib.first
-multi_first = lib.multi_first
+c_first = lib.first
+c_multi_first = lib.multi_first
 
 # Argument Types
-first.argtypes = [c_void_p, c_int, c_int]
-multi_first.argtypes = [c_void_p, c_int, c_int, c_int]
+c_first.argtypes = [c_void_p, c_int, c_int]
+c_multi_first.argtypes = [c_void_p, c_int, c_int, c_int]
 
 # Return types
-first.restype = c_int
+c_first.restype = c_int
+
+
+def first(data, blocks, n_elements):
+    return c_first(data.ctypes.data, blocks, n_elements)
+
+
+def multi_first(data, n, blocks, n_elements):
+    c_multi_first(data.ctypes.data, n, blocks, n_elements)
 
 
 def main():
@@ -28,8 +36,8 @@ def main():
     print(indata.astype(int))
 
     start = perf_counter()
-    # count = first(indata.ctypes.data, blocks, rows * columns)
-    multi_first(indata.ctypes.data, 20000, blocks, rows * columns)
+    # count = first(indata, blocks, rows * columns)
+    multi_first(indata, 20000, blocks, rows * columns)
     print(f"{perf_counter() - start}s")
 
     print(indata.astype(int))
