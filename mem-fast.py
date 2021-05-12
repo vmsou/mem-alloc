@@ -39,7 +39,16 @@ class Heap:
                 """
                 return
 
-        raise BadAlloc
+        raise BadAlloc("Not enough space")
+
+    def c_first(self, obj, force_size=None):
+        blocks = force_size
+        if not force_size or not isinstance(force_size, int):
+            blocks = math.ceil(sys.getsizeof(obj) / block_size)
+
+        count = cpp.first(Heap.blocks_used.ctypes.data, blocks, Heap.n_rows * Heap.n_blocks)
+        if count != blocks:
+            raise BadAlloc("Not enough space")
 
     def show(self):
         fig, ax = plt.subplots()
@@ -68,17 +77,31 @@ def new(obj, fit="first", force_size=None):
     return heap.first(obj, force_size)
 
 
-n = confirm("Number of allocs: ")
+def main():
+    n = confirm("Number of allocs: ")
 
-start = perf_counter()
-cpp.multi_first(heap.blocks_used.ctypes.data, n, 1, heap.n_rows, heap.n_blocks)
-print(f"[C++] {perf_counter() - start}s")
+    start = perf_counter()
+    # cpp.multi_first(heap.blocks_used.ctypes.data, n, 1, heap.n_rows * heap.n_blocks)
+    for _ in range(n):
+        heap.c_first(5)
+    print(f"[C-Python Loop] {perf_counter() - start}s")
 
-heap.blocks_used[:][:] = 0
+    heap.blocks_used[:][:] = 0
 
-start = perf_counter()
-for _ in range(n):
-    new(5)
-print(f"[Python] {perf_counter() - start}s")
+    start = perf_counter()
+    cpp.multi_first(heap.blocks_used.ctypes.data, n, 1, heap.n_rows * heap.n_blocks)
+    print(f"[C] {perf_counter() - start}s")
+    print(heap.blocks_used.sum())
 
-print(heap.blocks_used.sum())
+    heap.blocks_used[:][:] = 0
+
+    start = perf_counter()
+    for _ in range(n):
+        new(5)
+    print(f"[Python] {perf_counter() - start}s")
+
+    print(heap.blocks_used.sum())
+
+
+if __name__ == '__main__':
+    main()

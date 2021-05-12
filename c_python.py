@@ -22,14 +22,14 @@ def main():
     rows = 5000
     columns = 5000
     blocks = 1
-    indata = np.random.choice([True, False], (rows, columns), p=[0.2, 0.8])
+    indata = np.random.choice([True, False], (rows, columns), p=[0, 1])
 
     print(indata.sum())
     print(indata.astype(int))
 
     start = perf_counter()
     # count = first(indata.ctypes.data, blocks, rows * columns)
-    multi_first(indata.ctypes.data, 50000, blocks, rows * columns)
+    multi_first(indata.ctypes.data, 20000, blocks, rows * columns)
     print(f"{perf_counter() - start}s")
 
     print(indata.astype(int))
