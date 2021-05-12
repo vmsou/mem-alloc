@@ -1,8 +1,8 @@
 extern "C" {
-    int first(void* indatav, int blocks, int rows, int columns) {
+    int first(void* indatav, int blocks, int n_elements) {
         bool* indata = (bool*) indatav;
         int count = 0;
-        for (int i = 0; i < rows * columns; i++) {
+        for (int i = 0; i < n_elements; i++) {
            if (indata[i] == 0) {
                count++;
            } else count = 0;
@@ -17,9 +17,9 @@ extern "C" {
         return count;
     }
 
-    void alloc(void* indatav, int n, int blocks, int rows, int columns) {
+    void multi_first(void* indatav, int n, int blocks, int n_elements) {
         for (int i = 0; i < n; i++) {
-            first(indatav, blocks, rows, columns);
+            first(indatav, blocks, n_elements);
         }
     }
 }
