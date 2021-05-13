@@ -1,46 +1,67 @@
 import numpy as np
 
-rows = 5
-columns = 5
-
-b = range(rows * columns)
-bits_map = np.random.choice([50, 100], (rows, columns))
-blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
+from core import BadAlloc
 
 
-min_bits = 300
+def first_bitwise(used_arr, bytes_arr, min_bytes):
+    lowest_sum = 1e6
+    lowest_count = 1e6
+    lowest_idx = None
 
-lowest_sum = 1e6
-lowest_count = 1e6
-lowest_idx = 0
+    b_flat = used_arr.flat
+    bm_flat = bytes_arr.flat
+    b = range(np.prod(used_arr.shape))
 
-b_flat = blocks_used.flat
-bm_flat = bits_map.flat
-indices = []
+    count = 0
+    soma = 0
 
-print(blocks_used.astype(int))
-print(bits_map)
+    for i in b:
+        if not b_flat[i]:
+            count += 1
+            soma += bm_flat[i]
+        else:
+            count = 0
+            soma = 0
 
-count = 0
-soma = 0
-j = 0
+        if count < lowest_count and lowest_sum >= soma >= min_bytes:
+            lowest_sum = soma
+            lowest_count = count
+            lowest_idx = i
 
-for i in b:
-    if not b_flat[i]:
-        count += 1
-        soma += bm_flat[i]
+        if soma >= min_bytes:
+            count = 0
+            soma = 0
+
+    if lowest_idx is None:
+        raise BadAlloc
+
+    return lowest_idx, lowest_count
+
+
+def main():
+    rows = 5
+    columns = 5
+
+    blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
+    bytes_map = np.random.choice([30, 60], (rows, columns))
+
+    teste = [[f"\033[91m{bytes_map[i][j]}\033[0m" for j in range(columns)] for i in range(rows)]
+    visual = np.where(blocks_used == 1, teste, bytes_map)
+
+    num_bytes = 45
+    try:
+        lowest_idx, lowest_count = first_bitwise(blocks_used, bytes_map, num_bytes)
+    except BadAlloc:
+        print("Erro de alocação")
     else:
-        count = 0
-        soma = 0
+        print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
 
-    if count < lowest_count and lowest_sum >= soma >= min_bits:
-        lowest_sum = soma
-        lowest_count = count
-        lowest_idx = i
-
-    if soma >= min_bits:
-        count = 0
-        soma = 0
+        print()
+        for i in range(rows):
+            for j in range(columns):
+                print(visual[i][j], end=' ')
+            print()
 
 
-print(lowest_idx, lowest_sum, lowest_count)
+if __name__ == '__main__':
+    main()
