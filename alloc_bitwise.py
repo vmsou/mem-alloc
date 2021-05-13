@@ -3,7 +3,7 @@ import numpy as np
 from core import BadAlloc
 
 
-def first_bitwise(used_arr, bytes_arr, min_bytes):
+def best_bitwise(used_arr, bytes_arr, min_bytes):
     lowest_sum = 1e6
     lowest_count = 1e6
     lowest_idx = None
@@ -23,10 +23,13 @@ def first_bitwise(used_arr, bytes_arr, min_bytes):
             count = 0
             soma = 0
 
-        if count < lowest_count and lowest_sum >= soma >= min_bytes:
+        if count <= lowest_count and lowest_sum >= soma >= min_bytes:
             lowest_sum = soma
             lowest_count = count
             lowest_idx = i
+
+            count = 0
+            soma = 0
 
         if soma >= min_bytes:
             count = 0
@@ -45,9 +48,12 @@ def main():
     blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     bytes_map = np.random.choice([30, 60], (rows, columns))
 
-    num_bytes = 300
+    print(blocks_used.astype(int))
+    print(bytes_map)
+
+    num_bytes = 30
     try:
-        lowest_idx, lowest_count = first_bitwise(blocks_used, bytes_map, num_bytes)
+        lowest_idx, lowest_count = best_bitwise(blocks_used, bytes_map, num_bytes)
     except BadAlloc:
         print("Erro de alocação")
     else:
