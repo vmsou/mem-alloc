@@ -3,6 +3,28 @@ import numpy as np
 from core import BadAlloc
 
 
+def first_bitwise(used_arr, bytes_arr, min_bytes):
+    b = range(np.prod(used_arr.shape))
+    b_flat = used_arr.flat
+    bm_flat = bytes_arr.flat
+
+    count = 0
+    soma = 0
+
+    for i in b:
+        if not b_flat[i]:
+            count += 1
+            soma += bm_flat[i]
+        else:
+            count = 0
+            soma = 0
+
+        if soma >= min_bytes:
+            return i, count
+
+    raise BadAlloc("Not enough space")
+
+
 def best_bitwise(used_arr, bytes_arr, min_bytes):
     lowest_sum = 1e6
     lowest_count = 1e6
@@ -23,7 +45,7 @@ def best_bitwise(used_arr, bytes_arr, min_bytes):
             count = 0
             soma = 0
 
-        if count <= lowest_count and lowest_sum >= soma >= min_bytes:
+        if count < lowest_count and lowest_sum >= soma >= min_bytes:
             lowest_sum = soma
             lowest_count = count
             lowest_idx = i
@@ -41,37 +63,70 @@ def best_bitwise(used_arr, bytes_arr, min_bytes):
     return lowest_idx, lowest_count
 
 
+def visualize_alloc(used_arr, bytes_arr, idx, blocks):
+    rows, columns = used_arr.shape
+
+    teste = [[f"\033[91m{bytes_arr[i][j]}\033[0m" if used_arr[i][j] else f"\033[92m{bytes_arr[i][j]}\033[0m" for j in
+              range(columns)] for i in range(rows)]
+    visual = np.where(used_arr == 1, teste, bytes_arr)
+
+    ind = np.unravel_index(range(idx, idx - blocks, -1), (rows, columns))
+
+    for i, j in zip(ind[0], ind[1]):
+        visual[i][j] = teste[i][j]
+        used_arr[i][j] = 1
+
+    for i in range(rows):
+        for j in range(columns):
+            print(visual[i][j], end=' ')
+        print()
+
+
+def simulate(used_arr):
+    vazio = []
+    vazio.extend((0, i) for i in (1, 3, 9, 11, 14, 15, 17, 18, 19))
+    vazio.extend((1, i) for i in (0, 4, 6, 8, 9, 12, 15, 18))
+    vazio.extend((2, i) for i in (0, 4, 6, 7, 8, 11, 14, 15, 18))
+    vazio.extend((3, i) for i in (5, 10, 11, 12, 14, 18))
+    vazio.extend((4, i) for i in (0, 1, 2, 4, 5, 9, 10, 13, 17, 18, 19))
+    for i in range(5):
+        for j in range(20):
+            if (i, j) not in vazio:
+                used_arr[i][j] = 1
+
+
 def main():
-    rows = 10
-    columns = 10
+    rows = 5
+    columns = 20
 
-    blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
-    bytes_map = np.random.choice([30, 60], (rows, columns))
+    # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
+    blocks_used = np.zeros((rows, columns))
+    # bytes_map = np.random.choice([30, 60], (rows, columns))
+    bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
 
-    print(blocks_used.astype(int))
-    print(bytes_map)
+    simulate(blocks_used)
 
-    num_bytes = 30
+    num_bytes = 90
+    try:
+        lowest_idx, lowest_count = first_bitwise(blocks_used, bytes_map, num_bytes)
+    except BadAlloc:
+        print("Erro de alocação")
+    else:
+        print()
+        print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
+        print()
+        visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
+
+    num_bytes = 90
     try:
         lowest_idx, lowest_count = best_bitwise(blocks_used, bytes_map, num_bytes)
     except BadAlloc:
         print("Erro de alocação")
     else:
-
-        teste = [[f"\033[91m{bytes_map[i][j]}\033[0m" if blocks_used[i][j] else f"\033[92m{bytes_map[i][j]}\033[0m" for j in range(columns)] for i in range(rows)]
-        visual = np.where(blocks_used == 1, teste, bytes_map)
-        ind = np.unravel_index(range(lowest_idx, lowest_idx - lowest_count, -1), (rows, columns))
-
-        for i, j in zip(ind[0], ind[1]):
-            visual[i][j] = teste[i][j]
-
-        print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
-
         print()
-        for i in range(rows):
-            for j in range(columns):
-                print(visual[i][j], end=' ')
-            print()
+        print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
+        print()
+        visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
 
 
 if __name__ == '__main__':
