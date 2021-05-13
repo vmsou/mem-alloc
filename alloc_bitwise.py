@@ -39,21 +39,26 @@ def first_bitwise(used_arr, bytes_arr, min_bytes):
 
 
 def main():
-    rows = 5
-    columns = 5
+    rows = 10
+    columns = 10
 
     blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     bytes_map = np.random.choice([30, 60], (rows, columns))
 
-    teste = [[f"\033[91m{bytes_map[i][j]}\033[0m" for j in range(columns)] for i in range(rows)]
-    visual = np.where(blocks_used == 1, teste, bytes_map)
-
-    num_bytes = 45
+    num_bytes = 300
     try:
         lowest_idx, lowest_count = first_bitwise(blocks_used, bytes_map, num_bytes)
     except BadAlloc:
         print("Erro de alocação")
     else:
+
+        teste = [[f"\033[91m{bytes_map[i][j]}\033[0m" if blocks_used[i][j] else f"\033[92m{bytes_map[i][j]}\033[0m" for j in range(columns)] for i in range(rows)]
+        visual = np.where(blocks_used == 1, teste, bytes_map)
+        ind = np.unravel_index(range(lowest_idx, lowest_idx - lowest_count, -1), (rows, columns))
+
+        for i, j in zip(ind[0], ind[1]):
+            visual[i][j] = teste[i][j]
+
         print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
 
         print()
