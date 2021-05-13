@@ -101,32 +101,24 @@ def main():
 
     # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     blocks_used = np.zeros((rows, columns))
-    # bytes_map = np.random.choice([30, 60], (rows, columns))
-    bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
+    bytes_map = np.random.choice([30, 60], (rows, columns))
+    #bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
 
     simulate(blocks_used)
 
     num_bytes = 90
-    try:
-        lowest_idx, lowest_count = first_bitwise(blocks_used, bytes_map, num_bytes)
-    except BadAlloc:
-        print("Erro de alocação")
-    else:
-        print()
-        print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
-        print()
-        visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
+    lowest_idx, lowest_count = first_bitwise(blocks_used, bytes_map, num_bytes)
+    print()
+    print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
+    print()
+    visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
 
     num_bytes = 90
-    try:
-        lowest_idx, lowest_count = best_bitwise(blocks_used, bytes_map, num_bytes)
-    except BadAlloc:
-        print("Erro de alocação")
-    else:
-        print()
-        print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
-        print()
-        visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
+    lowest_idx, lowest_count = best_bitwise(blocks_used, bytes_map, num_bytes)
+    print()
+    print(f"Bytes: {num_bytes} Indice: {lowest_idx} Blocos: {lowest_count}")
+    print()
+    visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
 
 
 if __name__ == '__main__':
