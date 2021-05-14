@@ -16,6 +16,7 @@ c_multi_first.argtypes = [c_void_p, c_int, c_int, c_int]
 
 # Return types
 c_first.restype = c_int
+c_multi_first.restype = c_int
 
 
 def first(data, blocks, n_elements):
@@ -23,7 +24,7 @@ def first(data, blocks, n_elements):
 
 
 def multi_first(data, n, blocks, n_elements):
-    c_multi_first(data.ctypes.data, n, blocks, n_elements)
+    return c_multi_first(data.ctypes.data, n, blocks, n_elements)
 
 
 def main():

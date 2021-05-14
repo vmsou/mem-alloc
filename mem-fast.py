@@ -77,6 +77,15 @@ def new(obj, fit="first", force_size=None):
     return heap.first(obj, force_size)
 
 
+def modo_teste():
+    n = confirm("Number of allocs: ")
+    start = perf_counter()
+    t = cpp.multi_first(heap.blocks_used, n, 1, heap.n_rows * heap.n_blocks)
+    tempo = perf_counter() - start
+    d = t - n
+    print(f"Bem sucedidas: {n - d}", f"Mal sucedidas: {d}", f"Tempo Gasto: {tempo}", sep='\n')
+
+
 def main():
     n = confirm("Number of allocs: ")
 
@@ -104,4 +113,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    modo_teste()

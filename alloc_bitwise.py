@@ -48,7 +48,7 @@ def best_bitwise(used_arr, bytes_arr, min_bytes):
             count = 0
             soma = 0
 
-        if count <= lowest_count and lowest_sum >= soma >= min_bytes:
+        if count <= lowest_count and lowest_sum > soma >= min_bytes:
             lowest_sum = soma
             lowest_count = count
             lowest_idx = i
@@ -107,8 +107,8 @@ def main():
 
     # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     blocks_used = np.zeros((rows, columns))
-    # bytes_map = np.random.choice([30, 60], (rows, columns))
-    bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
+    bytes_map = np.random.choice([30, 60], (rows, columns))
+    #bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
 
     simulate(blocks_used)
 

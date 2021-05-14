@@ -17,9 +17,11 @@ extern "C" {
         return count;
     }
 
-    void multi_first(void* indatav, int n, int blocks, int n_elements) {
+    int multi_first(void* indatav, int n, int blocks, int n_elements) {
+        int t;
         for (int i = 0; i < n; i++) {
-            first(indatav, blocks, n_elements);
+            t += first(indatav, blocks, n_elements);
         }
+        return t;
     }
 }
