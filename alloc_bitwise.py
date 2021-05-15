@@ -135,6 +135,18 @@ def simulate(used_arr):
                 used_arr[i][j] = 1
 
 
+def new(num_bytes, blocks_used, bytes_map, fit="best", show=False):
+    idx, count = 0, 0
+    if fit == "best":
+        idx, count = best_bitwise(blocks_used, bytes_map, num_bytes)
+    elif fit == "first":
+        idx, count = first_bitwise(blocks_used, bytes_map, num_bytes)
+    elif fit == "worst":
+        idx, count = worst_bitwise(blocks_used, bytes_map, num_bytes)
+    if show:
+        visualize_alloc(blocks_used, bytes_map, idx, count)
+
+
 def main():
     rows = 5
     columns = 20
@@ -146,19 +158,9 @@ def main():
 
     simulate(blocks_used)
 
-    num_bytes = 60
-    idx, count = worst_bitwise(blocks_used, bytes_map, num_bytes)
-    visualize_alloc(blocks_used, bytes_map, idx, count)
-
-    """num_bytes = 90
-    idx, count = first_bitwise(blocks_used, bytes_map, num_bytes)
-    visualize_alloc(blocks_used, bytes_map, idx, count)
-
-    num_bytes = 90
-    idx, count = best_bitwise(blocks_used, bytes_map, num_bytes)
-    visualize_alloc(blocks_used, bytes_map, idx, count)"""
-
-
+    # new(90, blocks_used, bytes_map, fit="first", show=True)
+    # new(90, blocks_used, bytes_map, fit="best", show=True)
+    new(60, blocks_used, bytes_map, fit="worst", show=True)
 
 
 if __name__ == '__main__':
