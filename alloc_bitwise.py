@@ -69,6 +69,40 @@ def best_bitwise(used_arr, bytes_arr, min_bytes):
     return lowest_idx, lowest_count
 
 
+def worst_bitwise(used_arr, bytes_arr, min_bytes):
+    highest_sum = 0
+    highest_count = 0
+    highest_idx = None
+
+    b_flat = used_arr.flat
+    bm_flat = bytes_arr.flat
+    b = range(np.prod(used_arr.shape))
+
+    count = 0
+    soma = 0
+
+    for i in b:
+        if not b_flat[i]:
+            count += 1
+            soma += bm_flat[i]
+        else:
+            count = 0
+            soma = 0
+
+        if count >= highest_count and soma >= highest_sum:
+            highest_count = count
+            highest_sum = soma
+            highest_idx = i
+
+    if highest_idx is None:
+        raise BadAlloc
+
+    print()
+    print(f"[Worst fit] Bytes: {soma} Indice: {highest_idx} Blocos: {highest_count}")
+    print()
+    return highest_idx, highest_count
+
+
 def visualize_alloc(used_arr, bytes_arr, idx, blocks):
     rows, columns = used_arr.shape
 
@@ -107,18 +141,24 @@ def main():
 
     # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     blocks_used = np.zeros((rows, columns))
-    bytes_map = np.random.choice([30, 60], (rows, columns))
-    #bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
+    # bytes_map = np.random.choice([30, 60], (rows, columns))
+    bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
 
     simulate(blocks_used)
 
-    num_bytes = 90
-    lowest_idx, lowest_count = first_bitwise(blocks_used, bytes_map, num_bytes)
-    visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
+    num_bytes = 60
+    idx, count = worst_bitwise(blocks_used, bytes_map, num_bytes)
+    visualize_alloc(blocks_used, bytes_map, idx, count)
+
+    """num_bytes = 90
+    idx, count = first_bitwise(blocks_used, bytes_map, num_bytes)
+    visualize_alloc(blocks_used, bytes_map, idx, count)
 
     num_bytes = 90
-    lowest_idx, lowest_count = best_bitwise(blocks_used, bytes_map, num_bytes)
-    visualize_alloc(blocks_used, bytes_map, lowest_idx, lowest_count)
+    idx, count = best_bitwise(blocks_used, bytes_map, num_bytes)
+    visualize_alloc(blocks_used, bytes_map, idx, count)"""
+
+
 
 
 if __name__ == '__main__':
