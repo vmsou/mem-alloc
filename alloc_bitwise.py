@@ -32,7 +32,7 @@ def first_bitwise(min_bytes):
             print()
             return i, count, soma
 
-    raise BadAlloc("Not enough space")
+    raise BadAlloc("Espaço Insuficiente")
 
 
 def best_bitwise(min_bytes):
@@ -67,7 +67,7 @@ def best_bitwise(min_bytes):
             soma = 0
 
     if lowest_idx is None:
-        raise BadAlloc
+        raise BadAlloc("Espaço Insuficiente")
 
     print()
     print(f"[Best fit] Bytes: {soma} Indice: {lowest_idx} Blocos: {lowest_count}")
@@ -94,13 +94,13 @@ def worst_bitwise(min_bytes):
             count = 0
             soma = 0
 
-        if count >= highest_count and min_bytes < soma >= highest_sum:
+        if count >= highest_count and min_bytes <= soma >= highest_sum:
             highest_count = count
             highest_sum = soma
             highest_idx = i
 
     if highest_idx is None:
-        raise BadAlloc
+        raise BadAlloc("Espaço insuficiente")
 
     print()
     print(f"[Worst fit] Bytes: {soma} Indice: {highest_idx} Blocos: {highest_count}")
@@ -162,7 +162,7 @@ def main():
 
     # new(90, fit="first", show=True)
     # new(90, fit="best", show=True)
-    new(60, fit="worst", show=True)
+    new(120, fit="worst", show=True)
 
 
 if __name__ == '__main__':
