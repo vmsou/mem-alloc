@@ -2,11 +2,18 @@ import numpy as np
 
 from core import BadAlloc
 
+rows = 5
+columns = 20
+# blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
+blocks_used = np.zeros((rows, columns))
+# bytes_map = np.random.choice([30, 60], (rows, columns))
+bytes_map = np.repeat(30, rows * columns).reshape((rows, columns))
 
-def first_bitwise(used_arr, bytes_arr, min_bytes):
-    b = range(np.prod(used_arr.shape))
-    b_flat = used_arr.flat
-    bm_flat = bytes_arr.flat
+
+def first_bitwise(min_bytes):
+    b = range(np.prod(blocks_used.shape))
+    b_flat = blocks_used.flat
+    bm_flat = bytes_map.flat
 
     count = 0
     soma = 0
@@ -28,14 +35,14 @@ def first_bitwise(used_arr, bytes_arr, min_bytes):
     raise BadAlloc("Not enough space")
 
 
-def best_bitwise(used_arr, bytes_arr, min_bytes):
+def best_bitwise(min_bytes):
     lowest_sum = 1e6
     lowest_count = 1e6
     lowest_idx = None
 
-    b_flat = used_arr.flat
-    bm_flat = bytes_arr.flat
-    b = range(np.prod(used_arr.shape))
+    b_flat = blocks_used.flat
+    bm_flat = bytes_map.flat
+    b = range(np.prod(blocks_used.shape))
 
     count = 0
     soma = 0
@@ -69,14 +76,14 @@ def best_bitwise(used_arr, bytes_arr, min_bytes):
     return lowest_idx, lowest_count
 
 
-def worst_bitwise(used_arr, bytes_arr, min_bytes):
+def worst_bitwise(min_bytes):
     highest_sum = 0
     highest_count = 0
     highest_idx = None
 
-    b_flat = used_arr.flat
-    bm_flat = bytes_arr.flat
-    b = range(np.prod(used_arr.shape))
+    b_flat = blocks_used.flat
+    bm_flat = bytes_map.flat
+    b = range(np.prod(blocks_used.shape))
 
     count = 0
     soma = 0
@@ -89,7 +96,7 @@ def worst_bitwise(used_arr, bytes_arr, min_bytes):
             count = 0
             soma = 0
 
-        if count >= highest_count and soma >= highest_sum:
+        if count >= highest_count and min_bytes < soma >= highest_sum:
             highest_count = count
             highest_sum = soma
             highest_idx = i
@@ -103,18 +110,18 @@ def worst_bitwise(used_arr, bytes_arr, min_bytes):
     return highest_idx, highest_count
 
 
-def visualize_alloc(used_arr, bytes_arr, idx, blocks):
-    rows, columns = used_arr.shape
+def visualize_alloc(idx, blocks):
+    rows, columns = blocks_used.shape
 
-    teste = [[f"\033[91m{bytes_arr[i][j]}\033[0m" if used_arr[i][j] else f"\033[92m{bytes_arr[i][j]}\033[0m" for j in
+    teste = [[f"\033[91m{bytes_map[i][j]}\033[0m" if blocks_used[i][j] else f"\033[92m{bytes_map[i][j]}\033[0m" for j in
               range(columns)] for i in range(rows)]
-    visual = np.where(used_arr == 1, teste, bytes_arr)
+    visual = np.where(blocks_used == 1, teste, bytes_map)
 
     ind = np.unravel_index(range(idx, idx - blocks, -1), (rows, columns))
 
     for i, j in zip(ind[0], ind[1]):
         visual[i][j] = teste[i][j]
-        used_arr[i][j] = 1
+        blocks_used[i][j] = 1
 
     for i in range(rows):
         for j in range(columns):
@@ -122,7 +129,7 @@ def visualize_alloc(used_arr, bytes_arr, idx, blocks):
         print()
 
 
-def simulate(used_arr):
+def simulate():
     vazio = []
     vazio.extend((0, i) for i in (1, 3, 9, 11, 14, 15, 17, 18, 19))
     vazio.extend((1, i) for i in (0, 4, 6, 8, 9, 12, 15, 18))
@@ -132,35 +139,27 @@ def simulate(used_arr):
     for i in range(5):
         for j in range(20):
             if (i, j) not in vazio:
-                used_arr[i][j] = 1
+                blocks_used[i][j] = 1
 
 
-def new(num_bytes, blocks_used, bytes_map, fit="best", show=False):
+def new(num_bytes, fit="best", show=False):
     idx, count = 0, 0
     if fit == "best":
-        idx, count = best_bitwise(blocks_used, bytes_map, num_bytes)
+        idx, count = best_bitwise(num_bytes)
     elif fit == "first":
-        idx, count = first_bitwise(blocks_used, bytes_map, num_bytes)
+        idx, count = first_bitwise(num_bytes)
     elif fit == "worst":
-        idx, count = worst_bitwise(blocks_used, bytes_map, num_bytes)
+        idx, count = worst_bitwise(num_bytes)
     if show:
-        visualize_alloc(blocks_used, bytes_map, idx, count)
+        visualize_alloc(idx, count)
 
 
 def main():
-    rows = 5
-    columns = 20
+    simulate()
 
-    # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
-    blocks_used = np.zeros((rows, columns))
-    # bytes_map = np.random.choice([30, 60], (rows, columns))
-    bytes_map = np.repeat(30, rows*columns).reshape((rows, columns))
-
-    simulate(blocks_used)
-
-    # new(90, blocks_used, bytes_map, fit="first", show=True)
-    # new(90, blocks_used, bytes_map, fit="best", show=True)
-    new(60, blocks_used, bytes_map, fit="worst", show=True)
+    # new(90, fit="first", show=True)
+    # new(90, fit="best", show=True)
+    new(60, fit="worst", show=True)
 
 
 if __name__ == '__main__':

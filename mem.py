@@ -8,6 +8,10 @@ import plotly.graph_objects as go
 from core import BadAlloc, Byte, colors, confirm
 
 
+rows = confirm("Number of rows: ")
+columns = confirm("Number of columns: ")
+
+
 class Bucket:
     # TODO: Change size so it won't be const static, so best fit and first fit can be differentiated
     size = 50
@@ -36,8 +40,8 @@ class Bucket:
 
 class Heap:
     count = 0
-    n_rows = confirm("Number of rows: ")
-    n_buckets = confirm("Number of columns: ")
+    n_rows = rows
+    n_buckets = columns
     buckets = np.array([Bucket() for _ in range(n_rows * n_buckets)]).reshape((n_rows, n_buckets))
     buckets_used = np.zeros((n_rows, n_buckets), dtype=bool)
     b = range(n_rows * n_buckets)
