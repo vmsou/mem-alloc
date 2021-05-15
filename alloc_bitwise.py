@@ -8,10 +8,10 @@ columns = 20
 blocks_used = np.zeros((rows, columns))
 # bytes_map = np.random.choice([30, 60], (rows, columns))
 bytes_map = np.repeat(30, rows * columns).reshape((rows, columns))
+b = range(rows * columns)
 
 
 def first_bitwise(min_bytes):
-    b = range(np.prod(blocks_used.shape))
     b_flat = blocks_used.flat
     bm_flat = bytes_map.flat
 
@@ -30,7 +30,7 @@ def first_bitwise(min_bytes):
             print()
             print(f"[First fit] Bytes: {soma} Indice: {i} Blocos: {count}")
             print()
-            return i, count
+            return i, count, soma
 
     raise BadAlloc("Not enough space")
 
@@ -42,7 +42,6 @@ def best_bitwise(min_bytes):
 
     b_flat = blocks_used.flat
     bm_flat = bytes_map.flat
-    b = range(np.prod(blocks_used.shape))
 
     count = 0
     soma = 0
@@ -73,7 +72,7 @@ def best_bitwise(min_bytes):
     print()
     print(f"[Best fit] Bytes: {soma} Indice: {lowest_idx} Blocos: {lowest_count}")
     print()
-    return lowest_idx, lowest_count
+    return lowest_idx, lowest_count, lowest_sum
 
 
 def worst_bitwise(min_bytes):
@@ -83,7 +82,6 @@ def worst_bitwise(min_bytes):
 
     b_flat = blocks_used.flat
     bm_flat = bytes_map.flat
-    b = range(np.prod(blocks_used.shape))
 
     count = 0
     soma = 0
@@ -107,25 +105,30 @@ def worst_bitwise(min_bytes):
     print()
     print(f"[Worst fit] Bytes: {soma} Indice: {highest_idx} Blocos: {highest_count}")
     print()
-    return highest_idx, highest_count
+    return highest_idx, highest_count, highest_sum
 
 
 def visualize_alloc(idx, blocks):
-    rows, columns = blocks_used.shape
-
-    teste = [[f"\033[91m{bytes_map[i][j]}\033[0m" if blocks_used[i][j] else f"\033[92m{bytes_map[i][j]}\033[0m" for j in
-              range(columns)] for i in range(rows)]
-    visual = np.where(blocks_used == 1, teste, bytes_map)
-
     ind = np.unravel_index(range(idx, idx - blocks, -1), (rows, columns))
+    idx = []
 
     for i, j in zip(ind[0], ind[1]):
-        visual[i][j] = teste[i][j]
+        idx.append((i, j))
         blocks_used[i][j] = 1
 
     for i in range(rows):
         for j in range(columns):
-            print(visual[i][j], end=' ')
+            start = ""
+            end = ""
+            if (i, j) in idx:
+                start = "\033[92m"
+                end = "\033[0m"
+            elif blocks_used[i][j]:
+                start = "\033[91m"
+                end = "\033[0m"
+
+            value = bytes_map[i][j]
+            print(f"{start}{value}{end}", end=' ')
         print()
 
 
@@ -145,11 +148,11 @@ def simulate():
 def new(num_bytes, fit="best", show=False):
     idx, count = 0, 0
     if fit == "best":
-        idx, count = best_bitwise(num_bytes)
+        idx, count, _ = best_bitwise(num_bytes)
     elif fit == "first":
-        idx, count = first_bitwise(num_bytes)
+        idx, count, _ = first_bitwise(num_bytes)
     elif fit == "worst":
-        idx, count = worst_bitwise(num_bytes)
+        idx, count, _ = worst_bitwise(num_bytes)
     if show:
         visualize_alloc(idx, count)
 
