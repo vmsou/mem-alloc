@@ -9,7 +9,7 @@ columns = 20
 class Heap:
     # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     blocks_used = np.zeros((rows, columns))
-    bytes_map = np.random.choice([30, 60], (rows, columns))
+    bytes_map = np.random.choice([10, 30], p=[0.8, 0.2], size=(rows, columns))
     # bytes_map = np.repeat(30, rows * columns).reshape((rows, columns))
     b = range(rows * columns)
 
@@ -71,7 +71,7 @@ class Heap:
             raise BadAlloc("Espaço Insuficiente")
 
         print()
-        print(f"[Best fit] Bytes: {soma} Indice: {lowest_idx} Blocos: {lowest_count}")
+        print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
         print()
         return lowest_idx, lowest_count, lowest_sum
 
@@ -162,9 +162,9 @@ def new(num_bytes, fit="best", show=False):
 def main():
     simulate()
 
-    # new(90, fit="first", show=True)
-    # new(90, fit="best", show=True)
-    new(90, fit="worst", show=True)
+    # new(30, fit="first", show=True)
+    # new(30, fit="best", show=True)
+    new(30, fit="best", show=True)
 
 
 if __name__ == '__main__':
