@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 
 from core import BadAlloc, Byte, colors, confirm
 
-
+print("Alocação de Memória".center(70, '-'))
 rows = confirm("Number of rows: ")
 columns = confirm("Number of columns: ")
 
@@ -208,7 +208,7 @@ def main():
 
 
 if __name__ == '__main__':
-    for i in range(3):
+    for i in range(21):
         new(5 * i)
     heap.show()
 
