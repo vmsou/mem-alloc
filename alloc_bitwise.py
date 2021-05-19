@@ -4,132 +4,134 @@ from core import BadAlloc
 
 rows = 5
 columns = 20
-# blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
-blocks_used = np.zeros((rows, columns))
-bytes_map = np.random.choice([30, 60], (rows, columns))
-# bytes_map = np.repeat(30, rows * columns).reshape((rows, columns))
-b = range(rows * columns)
 
 
-def first_bitwise(min_bytes):
-    b_flat = blocks_used.flat
-    bm_flat = bytes_map.flat
+class Heap:
+    # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
+    blocks_used = np.zeros((rows, columns))
+    bytes_map = np.random.choice([30, 60], (rows, columns))
+    # bytes_map = np.repeat(30, rows * columns).reshape((rows, columns))
+    b = range(rows * columns)
 
-    count = 0
-    soma = 0
+    def first_bitwise(self, min_bytes):
+        b_flat = self.blocks_used.flat
+        bm_flat = self.bytes_map.flat
 
-    for i in b:
-        if not b_flat[i]:
-            count += 1
-            soma += bm_flat[i]
-        else:
-            count = 0
-            soma = 0
+        count = 0
+        soma = 0
 
-        if soma >= min_bytes:
-            print()
-            print(f"[First fit] Bytes: {soma} Indice: {i} Blocos: {count}")
-            print()
-            return i, count, soma
+        for i in self.b:
+            if not b_flat[i]:
+                count += 1
+                soma += bm_flat[i]
+            else:
+                count = 0
+                soma = 0
 
-    raise BadAlloc("Espaço Insuficiente")
+            if soma >= min_bytes:
+                print()
+                print(f"[First fit] Bytes: {soma} Indice: {i} Blocos: {count}")
+                print()
+                return i, count, soma
 
-
-def best_bitwise(min_bytes):
-    lowest_sum = 1e6
-    lowest_count = 1e6
-    lowest_idx = None
-
-    b_flat = blocks_used.flat
-    bm_flat = bytes_map.flat
-
-    count = 0
-    soma = 0
-
-    for i in b:
-        if not b_flat[i]:
-            count += 1
-            soma += bm_flat[i]
-        else:
-            count = 0
-            soma = 0
-
-        if count <= lowest_count and lowest_sum >= soma >= min_bytes:
-            lowest_sum = soma
-            lowest_count = count
-            lowest_idx = i
-
-            count = 0
-            soma = 0
-
-        if soma >= min_bytes:
-            count = 0
-            soma = 0
-
-    if lowest_idx is None:
         raise BadAlloc("Espaço Insuficiente")
 
-    print()
-    print(f"[Best fit] Bytes: {soma} Indice: {lowest_idx} Blocos: {lowest_count}")
-    print()
-    return lowest_idx, lowest_count, lowest_sum
+    def best_bitwise(self, min_bytes):
+        lowest_sum = 1e6
+        lowest_count = 1e6
+        lowest_idx = None
 
+        b_flat = self.blocks_used.flat
+        bm_flat = self.bytes_map.flat
 
-def worst_bitwise(min_bytes):
-    highest_sum = 0
-    highest_count = 0
-    highest_idx = None
+        count = 0
+        soma = 0
 
-    b_flat = blocks_used.flat
-    bm_flat = bytes_map.flat
+        for i in self.b:
+            if not b_flat[i]:
+                count += 1
+                soma += bm_flat[i]
+            else:
+                count = 0
+                soma = 0
 
-    count = 0
-    soma = 0
+            if count <= lowest_count and lowest_sum >= soma >= min_bytes:
+                lowest_sum = soma
+                lowest_count = count
+                lowest_idx = i
 
-    for i in b:
-        if not b_flat[i]:
-            count += 1
-            soma += bm_flat[i]
-        else:
-            count = 0
-            soma = 0
+                count = 0
+                soma = 0
 
-        if count >= highest_count and min_bytes <= soma >= highest_sum:
-            highest_count = count
-            highest_sum = soma
-            highest_idx = i
+            if soma >= min_bytes:
+                count = 0
+                soma = 0
 
-    if highest_idx is None:
-        raise BadAlloc("Espaço insuficiente")
+        if lowest_idx is None:
+            raise BadAlloc("Espaço Insuficiente")
 
-    print()
-    print(f"[Worst fit] Bytes: {soma} Indice: {highest_idx} Blocos: {highest_count}")
-    print()
-    return highest_idx, highest_count, highest_sum
-
-
-def visualize_alloc(idx, blocks):
-    ind = np.unravel_index(range(idx, idx - blocks, -1), (rows, columns))
-    idx = []
-
-    for i, j in zip(ind[0], ind[1]):
-        idx.append((i, j))
-        blocks_used[i][j] = 1
-
-    for i in range(rows):
-        for j in range(columns):
-            start = ""
-            end = ""
-            if (i, j) in idx:
-                start = "\033[92m"
-                end = "\033[0m"
-            elif blocks_used[i][j]:
-                start = "\033[91m"
-                end = "\033[0m"
-
-            value = bytes_map[i][j]
-            print(f"{start}{value}{end}", end=' ')
         print()
+        print(f"[Best fit] Bytes: {soma} Indice: {lowest_idx} Blocos: {lowest_count}")
+        print()
+        return lowest_idx, lowest_count, lowest_sum
+
+    def worst_bitwise(self, min_bytes):
+        highest_sum = 0
+        highest_count = 0
+        highest_idx = None
+
+        b_flat = self.blocks_used.flat
+        bm_flat = self.bytes_map.flat
+
+        count = 0
+        soma = 0
+
+        for i in self.b:
+            if not b_flat[i]:
+                count += 1
+                soma += bm_flat[i]
+            else:
+                count = 0
+                soma = 0
+
+            if count >= highest_count and min_bytes <= soma >= highest_sum:
+                highest_count = count
+                highest_sum = soma
+                highest_idx = i
+
+        if highest_idx is None:
+            raise BadAlloc("Espaço insuficiente")
+
+        print()
+        print(f"[Worst fit] Bytes: {soma} Indice: {highest_idx} Blocos: {highest_count}")
+        print()
+        return highest_idx, highest_count, highest_sum
+
+    def visualize_alloc(self, idx, blocks):
+        ind = np.unravel_index(range(idx, idx - blocks, -1), (rows, columns))
+        idx = []
+
+        for i, j in zip(ind[0], ind[1]):
+            idx.append((i, j))
+            self.blocks_used[i][j] = 1
+
+        for i in range(rows):
+            for j in range(columns):
+                start = ""
+                end = ""
+                if (i, j) in idx:
+                    start = "\033[92m"
+                    end = "\033[0m"
+                elif self.blocks_used[i][j]:
+                    start = "\033[91m"
+                    end = "\033[0m"
+
+                value = self.bytes_map[i][j]
+                print(f"{start}{value}{end}", end=' ')
+            print()
+
+
+heap = Heap()
 
 
 def simulate():
@@ -142,19 +144,19 @@ def simulate():
     for i in range(5):
         for j in range(20):
             if (i, j) not in vazio:
-                blocks_used[i][j] = 1
+                heap.blocks_used[i][j] = 1
 
 
 def new(num_bytes, fit="best", show=False):
     idx, count = 0, 0
     if fit == "best":
-        idx, count, _ = best_bitwise(num_bytes)
+        idx, count, _ = heap.best_bitwise(num_bytes)
     elif fit == "first":
-        idx, count, _ = first_bitwise(num_bytes)
+        idx, count, _ = heap.first_bitwise(num_bytes)
     elif fit == "worst":
-        idx, count, _ = worst_bitwise(num_bytes)
+        idx, count, _ = heap.worst_bitwise(num_bytes)
     if show:
-        visualize_alloc(idx, count)
+        heap.visualize_alloc(idx, count)
 
 
 def main():
@@ -162,7 +164,7 @@ def main():
 
     # new(90, fit="first", show=True)
     # new(90, fit="best", show=True)
-    new(90, fit="best", show=True)
+    new(90, fit="worst", show=True)
 
 
 if __name__ == '__main__':
