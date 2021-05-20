@@ -129,21 +129,22 @@ class Heap:
                 value = self.bytes_map[i][j]
                 print(f"{start}{value}{end}", end=' ')
             print()
+        print()
 
 
 heap = Heap()
 
 
 def simulate():
-    vazio = []
-    vazio.extend((0, i) for i in (1, 3, 9, 11, 14, 15, 17, 18, 19))
-    vazio.extend((1, i) for i in (0, 4, 6, 8, 9, 12, 15, 18))
-    vazio.extend((2, i) for i in (0, 4, 6, 7, 8, 11, 14, 15, 18))
-    vazio.extend((3, i) for i in (5, 10, 11, 12, 14, 18))
-    vazio.extend((4, i) for i in (0, 1, 2, 4, 5, 9, 10, 13, 17, 18, 19))
+    matriz = []
+    matriz.extend((0, i) for i in (1, 3, 9, 11, 14, 15, 17, 18, 19))
+    matriz.extend((1, i) for i in (0, 4, 6, 8, 9, 12, 15, 18))
+    matriz.extend((2, i) for i in (0, 4, 6, 7, 8, 11, 14, 15, 18))
+    matriz.extend((3, i) for i in (5, 10, 11, 12, 14, 18))
+    matriz.extend((4, i) for i in (0, 1, 2, 4, 5, 9, 10, 13, 17, 18, 19))
     for i in range(5):
         for j in range(20):
-            if (i, j) not in vazio:
+            if (i, j) not in matriz:
                 heap.blocks_used[i][j] = 1
 
 
@@ -157,6 +158,30 @@ def new(num_bytes, fit="best", show=False):
         idx, count, _ = heap.worst_bitwise(num_bytes)
     if show:
         heap.visualize_alloc(idx, count)
+    return idx, count
+
+
+def delete(idx, count, show=False):
+    ind = np.unravel_index(range(idx, idx-count, -1), (rows, columns))
+    idx = list(zip(*ind))
+
+    heap.blocks_used[ind] = False
+
+    if show:
+        for i in range(rows):
+            for j in range(columns):
+                start = ""
+                end = ""
+                if (i, j) in idx:
+                    start = "\033[93m"
+                    end = "\033[0m"
+                elif heap.blocks_used[i][j]:
+                    start = "\033[91m"
+                    end = "\033[0m"
+
+                value = heap.bytes_map[i][j]
+                print(f"{start}{value}{end}", end=' ')
+            print()
 
 
 def main():
@@ -164,7 +189,8 @@ def main():
 
     # new(30, fit="first", show=True)
     # new(30, fit="best", show=True)
-    new(30, fit="best", show=True)
+    t = new(30, fit="best", show=True)
+    delete(*t, show=True)
 
 
 if __name__ == '__main__':
