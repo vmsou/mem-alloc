@@ -29,7 +29,6 @@ class Heap:
                 soma = 0
 
             if soma >= min_bytes:
-                print()
                 print(f"[First fit] Bytes: {soma} Indice: {i} Blocos: {count}")
                 print()
                 return i, count, soma
@@ -70,7 +69,6 @@ class Heap:
         if lowest_idx is None:
             raise BadAlloc("Espaço Insuficiente")
 
-        print()
         print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
         print()
         return lowest_idx, lowest_count, lowest_sum
@@ -102,7 +100,6 @@ class Heap:
         if highest_idx is None:
             raise BadAlloc("Espaço insuficiente")
 
-        print()
         print(f"[Worst fit] Bytes: {soma} Indice: {highest_idx} Blocos: {highest_count}")
         print()
         return highest_idx, highest_count, highest_sum
@@ -161,7 +158,8 @@ def new(num_bytes, fit="best", show=False):
     return idx, count
 
 
-def delete(idx, count, show=False):
+def delete(p, show=False):
+    idx, count = p
     ind = np.unravel_index(range(idx, idx-count, -1), (rows, columns))
     idx = list(zip(*ind))
 
@@ -190,7 +188,8 @@ def main():
     # new(30, fit="first", show=True)
     # new(30, fit="best", show=True)
     t = new(30, fit="best", show=True)
-    delete(*t, show=True)
+    t2 = new(60, fit='worst', show=True)
+    delete(t2, show=True)
 
 
 if __name__ == '__main__':
