@@ -52,7 +52,6 @@ class Heap:
 
             if soma >= min_bytes:
                 print(f"[First fit] Bytes: {soma} Indice: {i} Blocos: {count}")
-                print()
                 return i, count, soma
 
         raise BadAlloc("Espaço Insuficiente")
@@ -92,7 +91,6 @@ class Heap:
             raise BadAlloc("Espaço Insuficiente")
 
         print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
-        print()
         return lowest_idx, lowest_count, lowest_sum
 
     def worst_bitwise(self, min_bytes):
@@ -123,7 +121,6 @@ class Heap:
             raise BadAlloc("Espaço insuficiente")
 
         print(f"[Worst fit] Bytes: {soma} Indice: {highest_idx} Blocos: {highest_count}")
-        print()
         return highest_idx, highest_count, highest_sum
 
     def visualize_alloc(self, p):
@@ -151,7 +148,12 @@ class Heap:
         print()
 
     def visualize(self):
-        print(f"[Memory] Total: {np.sum(self.bytes_map)} Allocated: {None} Free: {None}")
+        total_bytes = np.sum(self.bytes_map)
+        n_allocated = np.sum(self.blocks_used == 1)
+        bytes_allocated = np.sum(np.extract(self.blocks_used == 1, self.bytes_map))
+        n_free = np.sum(self.blocks_used == 0)
+        bytes_free = total_bytes - bytes_allocated
+        print(f"[Memory] Total: {total_bytes} bytes | Allocated [{n_allocated}]: {bytes_allocated} bytes | Free [{n_free}]: {bytes_free} bytes")
         for i in range(rows):
             for j in range(columns):
                 start = ""
@@ -206,7 +208,6 @@ def delete(p, show=False):
     heap.blocks_used[ind] = False
 
     print(f"[Dealloc] Bytes: {p.total_bytes} Indice: {p.index} Blocos: {p.count}")
-    print()
 
     if show:
         for i in range(rows):
@@ -232,7 +233,7 @@ def main():
     # new(30, fit="first", show=True)
     # new(30, fit="best", show=True)
     t = new(30, fit="best", show=True)
-    t2 = new(60, fit='worst', show=True)
+    t2 = new(60, fit='first', show=True)
     delete(t2, show=True)
     heap.visualize()
 
