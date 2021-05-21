@@ -148,6 +148,18 @@ class Heap:
             print()
         print()
 
+    def visualize(self):
+        for i in range(rows):
+            for j in range(columns):
+                start = ""
+                end = ""
+                if self.blocks_used[i][j]:
+                    start = "\033[91m"
+                    end = "\033[0m"
+                print(f"{start}{self.bytes_map[i][j]}{end}", end=' ')
+            print()
+        print()
+
 
 heap = Heap()
 
@@ -205,6 +217,7 @@ def delete(p, show=False):
                 value = heap.bytes_map[i][j]
                 print(f"{start}{value}{end}", end=' ')
             print()
+        print()
 
 
 def main():
@@ -215,6 +228,7 @@ def main():
     t = new(30, fit="best", show=True)
     t2 = new(60, fit='worst', show=True)
     delete(t2, show=True)
+    heap.visualize()
 
 
 if __name__ == '__main__':
