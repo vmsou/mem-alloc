@@ -6,6 +6,27 @@ rows = 5
 columns = 20
 
 
+class Block:
+    def __init__(self):
+        self._index = None
+        self.count = None
+        self.indexes = None
+
+    def set_data(self, index, count):
+        self.count = count
+        self.index = index
+
+    @property
+    def index(self):
+        return self._index
+
+    @index.setter
+    def index(self, value):
+        print("Ativado")
+        self.indexes = np.unravel_index(range(value, value-self.count, -1), (rows, columns))
+        self._index = value
+
+
 class Heap:
     # blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     blocks_used = np.zeros((rows, columns))
