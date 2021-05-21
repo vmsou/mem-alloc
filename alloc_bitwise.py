@@ -22,7 +22,6 @@ class Block:
 
     @index.setter
     def index(self, value):
-        print("Ativado")
         self.indexes = np.unravel_index(range(value, value-self.count, -1), (rows, columns))
         self._index = value
 
@@ -176,12 +175,13 @@ def new(num_bytes, fit="best", show=False):
         idx, count, _ = heap.worst_bitwise(num_bytes)
     if show:
         heap.visualize_alloc(idx, count)
-    return idx, count
+    block = Block()
+    block.set_data(idx, count)
+    return block
 
 
 def delete(p, show=False):
-    idx, count = p
-    ind = np.unravel_index(range(idx, idx-count, -1), (rows, columns))
+    ind = p.indexes
     idx = list(zip(*ind))
 
     heap.blocks_used[ind] = False
