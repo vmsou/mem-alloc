@@ -124,11 +124,11 @@ class Heap:
         print()
         return highest_idx, highest_count, highest_sum
 
-    def visualize_alloc(self, idx, blocks):
-        ind = np.unravel_index(range(idx, idx - blocks, -1), (rows, columns))
+    def visualize_alloc(self, p):
+        ind = p.indexes
         idx = []
 
-        for i, j in zip(ind[0], ind[1]):
+        for i, j in zip(*ind):
             idx.append((i, j))
             self.blocks_used[i][j] = 1
 
@@ -167,16 +167,20 @@ def simulate():
 
 def new(num_bytes, fit="best", show=False):
     idx, count = 0, 0
+    block = Block()
+
     if fit == "best":
         idx, count, _ = heap.best_bitwise(num_bytes)
     elif fit == "first":
         idx, count, _ = heap.first_bitwise(num_bytes)
     elif fit == "worst":
         idx, count, _ = heap.worst_bitwise(num_bytes)
-    if show:
-        heap.visualize_alloc(idx, count)
-    block = Block()
+    else:
+        raise NotImplementedError("Tipo não encontrado!")
+
     block.set_data(idx, count)
+    if show:
+        heap.visualize_alloc(block)
     return block
 
 
