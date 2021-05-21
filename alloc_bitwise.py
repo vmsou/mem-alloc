@@ -10,11 +10,13 @@ class Block:
     def __init__(self):
         self._index = None
         self.count = None
+        self.total_bytes = None
         self.indexes = None
 
-    def set_data(self, index, count):
+    def set_data(self, index, count, total_bytes):
         self.count = count
         self.index = index
+        self.total_bytes = total_bytes
 
     @property
     def index(self):
@@ -178,19 +180,19 @@ def simulate():
 
 
 def new(num_bytes, fit="best", show=False):
-    idx, count = 0, 0
+    idx, count, total_bytes = 0, 0, 0
     block = Block()
 
     if fit == "best":
-        idx, count, _ = heap.best_bitwise(num_bytes)
+        idx, count, total_bytes = heap.best_bitwise(num_bytes)
     elif fit == "first":
-        idx, count, _ = heap.first_bitwise(num_bytes)
+        idx, count, total_bytes = heap.first_bitwise(num_bytes)
     elif fit == "worst":
-        idx, count, _ = heap.worst_bitwise(num_bytes)
+        idx, count, total_bytes = heap.worst_bitwise(num_bytes)
     else:
         raise NotImplementedError("Tipo não encontrado!")
 
-    block.set_data(idx, count)
+    block.set_data(idx, count, total_bytes)
     if show:
         heap.visualize_alloc(block)
     return block
@@ -201,6 +203,9 @@ def delete(p, show=False):
     idx = list(zip(*ind))
 
     heap.blocks_used[ind] = False
+
+    print(f"[Dealloc] Bytes: {p.total_bytes} Indice: {p.index} Blocos: {p.count}")
+    print()
 
     if show:
         for i in range(rows):
