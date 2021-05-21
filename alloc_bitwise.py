@@ -151,6 +151,7 @@ class Heap:
         print()
 
     def visualize(self):
+        print(f"[Memory] Total: {np.sum(self.bytes_map)} Allocated: {None} Free: {None}")
         for i in range(rows):
             for j in range(columns):
                 start = ""
