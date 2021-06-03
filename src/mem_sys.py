@@ -10,6 +10,9 @@ class Block:
         self.total_bytes = None
         self.indexes = None
 
+    def __invert__(self):
+        delete(self, show=True)
+
     def set_data(self, index, count, total_bytes):
         self.count = count
         self.index = index

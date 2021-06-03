@@ -1,9 +1,10 @@
-from mem_sys import heap, new
+from mem_sys import heap, new, delete
 
 
 def main():
     heap.visualize()
-    new(100, show=True)
+    t = new(100, show=True)
+    heap.visualize()
 
 
 if __name__ == '__main__':
