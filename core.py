@@ -25,4 +25,17 @@ def confirm(msg="Value: "):
     return n
 
 
+def size_confirm(name):
+    while True:
+        try:
+            value = int(input(name + ": "))
+            if value > 0:
+                return value
+            raise ValueError
+        except ValueError:
+            print("Entrada inválida. Tente Novamente")
+
+
+
+
 colors = ["darkblue"] + list(matplotlib.colors.cnames) + ["yellow"]
