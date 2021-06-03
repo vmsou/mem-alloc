@@ -3,7 +3,7 @@ from mem_sys import heap, new, delete
 
 def main():
     heap.visualize()
-    t = new(45, 'test', show=True)
+    t = new(90, 'best', show=True)
     delete(t, show=True)
     heap.visualize()
 

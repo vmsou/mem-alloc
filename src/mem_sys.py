@@ -54,49 +54,7 @@ class Heap:
         b_flat = self.blocks_used.flat
         bm_flat = self.bytes_map.flat
 
-        count = 0
-        soma = 0
-
-        for i in self.b:
-            if not b_flat[i]:
-                count += 1
-                soma += bm_flat[i]
-            else:
-                count = 0
-                soma = 0
-
-            if lowest_sum >= soma >= min_bytes and count <= lowest_count:
-                lowest_sum = soma
-                lowest_count = count
-                lowest_idx = i
-
-                count = 0
-                soma = 0
-
-            if soma >= min_bytes:
-                count = 0
-                soma = 0
-
-        if lowest_idx is None:
-            raise BadAlloc("Espaço Insuficiente")
-
-        print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
-        block.set_data(lowest_idx, lowest_count, lowest_sum)
-
-        self.blocks_used[block.indexes] = 1
-
-        return block
-
-    def test_best(self, min_bytes):
-        block = Block()
-        lowest_sum = 1e6
-        lowest_count = 1e6
-        lowest_idx = None
-
-        b_flat = self.blocks_used.flat
-        bm_flat = self.bytes_map.flat
-
-        arr_len = len(b_flat)
+        arr_len = self.rows * self.columns
 
         for i in self.b:
             idx = i
@@ -119,7 +77,13 @@ class Heap:
                     if b_flat[idx] == 1:
                         break
 
+        if lowest_idx is None:
+            raise BadAlloc("Espaço Insuficiente")
+
+        print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
         block.set_data(lowest_idx, lowest_count, lowest_sum)
+        self.blocks_used[block.indexes] = 1
+
         return block
 
     def worst_bitwise(self, min_bytes):
@@ -182,8 +146,6 @@ def new(num_bytes, fit="best", show=False):
         block = heap.first_bitwise(num_bytes)
     elif fit == "worst":
         block = heap.worst_bitwise(num_bytes)
-    elif fit == 'test':
-        block = heap.test_best(num_bytes)
     else:
         raise NotImplementedError("Tipo não encontrado!")
 
