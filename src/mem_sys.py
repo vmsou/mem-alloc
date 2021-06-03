@@ -38,12 +38,14 @@ class Heap:
     b = range(rows * columns)
 
     def first_bitwise(self, min_bytes):
+        """Necessário a implementação"""
         block = Block()
         i, count, soma = 0, 0, 0
         block.set_data(i, count, soma)
         return i, count, soma
 
     def best_bitwise(self, min_bytes):
+        """Concluido"""
         block = Block()
         lowest_sum = 1e6
         lowest_count = 1e6
@@ -86,12 +88,13 @@ class Heap:
         return block
 
     def worst_bitwise(self, min_bytes):
+        """Necessário a implementação"""
         highest_idx, highest_count, highest_sum = 0, 0, 0
         block = Block()
         block.set_data(highest_idx, highest_count, highest_count)
         return block
 
-    def visualize_alloc(self, p):
+    def visualize_alloc(self, p: Block):
         ind = p.indexes
         idx = []
 
@@ -152,7 +155,7 @@ def new(num_bytes, fit="best", show=False):
     return block
 
 
-def delete(p, show=False):
+def delete(p: Block, show=False):
     ind = p.indexes
     idx = list(zip(*ind))
 
