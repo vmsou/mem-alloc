@@ -65,7 +65,7 @@ class Heap:
                 count = 0
                 soma = 0
 
-            if count <= lowest_count and lowest_sum >= soma >= min_bytes:
+            if lowest_sum >= soma >= min_bytes and count <= lowest_count:
                 lowest_sum = soma
                 lowest_count = count
                 lowest_idx = i
@@ -85,6 +85,41 @@ class Heap:
 
         self.blocks_used[block.indexes] = 1
 
+        return block
+
+    def test_best(self, min_bytes):
+        block = Block()
+        lowest_sum = 1e6
+        lowest_count = 1e6
+        lowest_idx = None
+
+        b_flat = self.blocks_used.flat
+        bm_flat = self.bytes_map.flat
+
+        arr_len = len(b_flat)
+
+        for i in self.b:
+            idx = i
+            count = 0
+            soma = 0
+            if b_flat[i] == 0:
+                while not b_flat[idx]:
+                    count += 1
+                    soma += bm_flat[idx]
+                    if min_bytes <= soma <= lowest_sum and count <= lowest_count:
+                        lowest_idx = idx
+                        lowest_count = count
+                        lowest_sum = soma
+                        break
+
+                    idx += 1
+                    if idx >= arr_len:
+                        break
+
+                    if b_flat[idx] == 1:
+                        break
+
+        block.set_data(lowest_idx, lowest_count, lowest_sum)
         return block
 
     def worst_bitwise(self, min_bytes):
@@ -147,6 +182,8 @@ def new(num_bytes, fit="best", show=False):
         block = heap.first_bitwise(num_bytes)
     elif fit == "worst":
         block = heap.worst_bitwise(num_bytes)
+    elif fit == 'test':
+        block = heap.test_best(num_bytes)
     else:
         raise NotImplementedError("Tipo não encontrado!")
 
@@ -179,4 +216,3 @@ def delete(p: Block, show=False):
                 print(f"{start}{value}{end}", end=' ')
             print()
         print()
-
