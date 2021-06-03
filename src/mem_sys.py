@@ -42,6 +42,7 @@ class Heap:
         return i, count, soma
 
     def best_bitwise(self, min_bytes):
+        block = Block()
         lowest_sum = 1e6
         lowest_count = 1e6
         lowest_idx = None
@@ -76,7 +77,11 @@ class Heap:
             raise BadAlloc("Espaço Insuficiente")
 
         print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
-        return lowest_idx, lowest_count, lowest_sum
+        block.set_data(lowest_idx, lowest_count, lowest_sum)
+
+        self.blocks_used[block.indexes] = 1
+
+        return block
 
     def worst_bitwise(self, min_bytes):
         highest_idx, highest_count, highest_sum = 0, 0, 0
@@ -88,7 +93,6 @@ class Heap:
 
         for i, j in zip(*ind):
             idx.append((i, j))
-            self.blocks_used[i][j] = 1
 
         for i in range(Heap.rows):
             for j in range(Heap.columns):
@@ -129,19 +133,16 @@ heap = Heap()
 
 
 def new(num_bytes, fit="best", show=False):
-    idx, count, total_bytes = 0, 0, 0
-    block = Block()
-
+    block = None
     if fit == "best":
-        idx, count, total_bytes = heap.best_bitwise(num_bytes)
+        block = heap.best_bitwise(num_bytes)
     elif fit == "first":
-        idx, count, total_bytes = heap.first_bitwise(num_bytes)
+        block = heap.first_bitwise(num_bytes)
     elif fit == "worst":
-        idx, count, total_bytes = heap.worst_bitwise(num_bytes)
+        block = heap.worst_bitwise(num_bytes)
     else:
         raise NotImplementedError("Tipo não encontrado!")
 
-    block.set_data(idx, count, total_bytes)
     if show:
         heap.visualize_alloc(block)
     return block
