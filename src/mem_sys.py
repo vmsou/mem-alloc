@@ -94,10 +94,7 @@ class Heap:
 
     def visualize_alloc(self, p: Block):
         ind = p.indexes
-        idx = []
-
-        for i, j in zip(*ind):
-            idx.append((i, j))
+        idx = list(zip(*ind))
 
         for i in range(Heap.rows):
             for j in range(Heap.columns):
@@ -146,7 +143,7 @@ def new(num_bytes, fit="best", show=False):
     elif fit == "worst":
         block = heap.worst_bitwise(num_bytes)
     else:
-        raise NotImplementedError("Tipo não encontrado!")
+        raise NotImplementedError("Tipo não encontrado.", fit)
 
     if show:
         heap.visualize_alloc(block)
