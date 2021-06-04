@@ -31,11 +31,12 @@ class Block:
 class Heap:
     rows = size_confirm("Linhas")
     columns = size_confirm("Colunas")
+    max_size = rows * columns
     blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
     # blocks_used = np.zeros((rows, columns), dtype=bool)
     bytes_map = np.random.choice([10, 30], p=[0.8, 0.2], size=(rows, columns))
-    # bytes_map = np.repeat(30, rows * columns).reshape((rows, columns))
-    b = range(rows * columns)
+    # bytes_map = np.repeat(30, max_size).reshape((rows, columns))
+    b = range(max_size)
 
     def first_bitwise(self, min_bytes):
         """Necessário a implementação"""
@@ -54,8 +55,6 @@ class Heap:
         b_flat = self.blocks_used.flat
         bm_flat = self.bytes_map.flat
 
-        arr_len = self.rows * self.columns
-
         for i in self.b:
             idx = i
             count = 0
@@ -71,7 +70,7 @@ class Heap:
                         break
 
                     idx += 1
-                    if idx >= arr_len:
+                    if idx >= Heap.max_size:
                         break
 
                     if b_flat[idx] == 1:
