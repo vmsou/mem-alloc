@@ -112,6 +112,25 @@ class Heap:
             print()
         print()
 
+    def visualize_dealloc(self, p: Block):
+        idx = list(zip(*p.indexes))
+
+        for i in range(self.rows):
+            for j in range(self.columns):
+                start = ""
+                end = ""
+                if (i, j) in idx:
+                    start = "\033[93m"
+                    end = "\033[0m"
+                elif Heap.blocks_used[i][j]:
+                    start = "\033[91m"
+                    end = "\033[0m"
+
+                value = Heap.bytes_map[i][j]
+                print(f"{start}{value}{end}", end=' ')
+            print()
+        print()
+
     def visualize(self):
         total_bytes = np.sum(self.bytes_map)
         n_allocated = np.sum(self.blocks_used == 1)
@@ -152,25 +171,9 @@ def new(num_bytes, fit="best", show=False):
 
 def delete(p: Block, show=False):
     ind = p.indexes
-    idx = list(zip(*ind))
-
     Heap.blocks_used[ind] = False
 
     print(f"[Dealloc] Bytes: {p.total_bytes} Indice: {p.index} Blocos: {p.count}")
 
     if show:
-        for i in range(Heap.rows):
-            for j in range(Heap.columns):
-                start = ""
-                end = ""
-                if (i, j) in idx:
-                    start = "\033[93m"
-                    end = "\033[0m"
-                elif Heap.blocks_used[i][j]:
-                    start = "\033[91m"
-                    end = "\033[0m"
-
-                value = Heap.bytes_map[i][j]
-                print(f"{start}{value}{end}", end=' ')
-            print()
-        print()
+        heap.visualize_dealloc(p)
