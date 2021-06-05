@@ -1,11 +1,43 @@
 from mem_sys import heap, new, delete
+from core import confirmar, BadAlloc, affirmations
+from validation import validate_fit
+
+
+def alocar():
+    min_bytes = confirmar("Quantidade minima de bytes: ", tipo=int, confirm=True, goto=menu)
+    fit = confirmar("Tipo de fit: ", tipo=str, confirm=True, validation=validate_fit, goto=menu)
+    show = confirmar("Mostrar alocação: ", tipo=str, confirm=True, goto=menu)
+    show = True if show in affirmations else False
+    new(min_bytes, fit, show=show)
+
+
+def dealocar():
+    ...
+
+
+def menu():
+    action_dict = {1: alocar, 2: dealocar, 3: heap.visualize}
+    action_name = ["Alocar", "Dealocar", "Visualizar"]
+    while True:
+        for n, name in enumerate(action_name, start=1):
+            print(f"[{n}] {name}")
+        try:
+            action = confirmar("Ação: ", confirm=False, goto=menu)
+            action_dict[int(action)]()
+        except IndexError or ValueError:
+            print("Entrada Inválida! Tente Novamente.")
+        except BadAlloc:
+            print("Espaço insuficiente para Alocação.")
 
 
 def main():
-    heap.visualize()
+    """heap.visualize()
     t = new(90, 'best', show=True)
     delete(t, show=True)
-    heap.visualize()
+    heap.visualize()"""
+
+    while True:
+        menu()
 
 
 if __name__ == '__main__':
