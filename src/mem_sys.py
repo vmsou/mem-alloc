@@ -4,6 +4,7 @@ from core import size_confirm, BadAlloc
 
 
 class Block:
+    """Classe utilizada para representar o número de blocos alocados"""
     def __init__(self):
         self._index = None
         self.count = None
@@ -14,44 +15,55 @@ class Block:
         delete(self, show=True)
 
     def set_data(self, index, count, total_bytes):
+        """Inicializa seus valores na lista, obriga a preencher as informações de forma ordenada"""
         self.count = count
         self.index = index
         self.total_bytes = total_bytes
 
     @property
     def index(self):
+        """A partir da propriedade privada retorna seu valor"""
         return self._index
 
     @index.setter
     def index(self, value):
+        """Quando seu valor for atribuido; gaurda seus valores de modo contiguo em indices bidimensionais"""
         self.indexes = np.unravel_index(range(value, value-self.count, -1), (Heap.rows, Heap.columns))
         self._index = value
 
 
 class Heap:
+    """Classe utilizada para representar a memória"""
+
+    # Guardando valores de forma estática, para ser compartilhada com outras instâncias
     rows = size_confirm("Linhas")
     columns = size_confirm("Colunas")
     max_size = rows * columns
-    blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])
+    blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])  # Guarda os blocos atualmente utilizados
     # blocks_used = np.zeros((rows, columns), dtype=bool)
-    bytes_map = np.random.choice([10, 30], p=[0.8, 0.2], size=(rows, columns))
+    bytes_map = np.random.choice([10, 30], p=[0.8, 0.2], size=(rows, columns))  # Mapeia a quantidade de bytes em cada posição
     # bytes_map = np.repeat(30, max_size).reshape((rows, columns))
-    b = range(max_size)
+    b = range(max_size)  # Usado para iterar de forma eficiente em uma matriz flat
 
     def first_bitwise(self, min_bytes):
-        """Necessário a implementação"""
+        """Necessário a implementação
+        Encontra o primeiro espaço em memória cujo o tamanho seja igual ou maior que o desejado
+        """
         block = Block()
         i, count, soma = 0, 0, 0
         block.set_data(i, count, soma)
-        return i, count, soma
+        return block
 
     def best_bitwise(self, min_bytes):
-        """Concluido"""
+        """Concluido
+        Encontra o melhor espaço que acomode o tamanho requisitado
+        """
         block = Block()
         lowest_sum = 1e6
         lowest_count = 1e6
         lowest_idx = None
 
+        # Converte a matriz de forma que possa ser lida de forma contígua
         b_flat = self.blocks_used.flat
         bm_flat = self.bytes_map.flat
 
@@ -81,18 +93,21 @@ class Heap:
 
         print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
         block.set_data(lowest_idx, lowest_count, lowest_sum)
-        self.blocks_used[block.indexes] = 1
+        self.blocks_used[block.indexes] = 1  # Atualiza a matriz para indicar as posições utilizadas
 
         return block
 
     def worst_bitwise(self, min_bytes):
-        """Necessário a implementação"""
+        """Necessário a implementação
+        Encontra a região na memória com maior espaço livre
+        """
         highest_idx, highest_count, highest_sum = 0, 0, 0
         block = Block()
         block.set_data(highest_idx, highest_count, highest_count)
         return block
 
     def visualize_alloc(self, p: Block):
+        """Recebe um objeto de Classe Block e a partir de seus indices imprime suas posições alocadas"""
         ind = p.indexes
         idx = list(zip(*ind))
 
@@ -113,6 +128,7 @@ class Heap:
         print()
 
     def visualize_dealloc(self, p: Block):
+        """Recebe um objeto de Classe Block e a partir de seus indices imprime suas posições dealocadas"""
         idx = list(zip(*p.indexes))
 
         for i in range(self.rows):
@@ -132,6 +148,7 @@ class Heap:
         print()
 
     def visualize(self):
+        """Imprime a matriz com suas informações e condições."""
         total_bytes = np.sum(self.bytes_map)
         n_allocated = np.sum(self.blocks_used == 1)
         bytes_allocated = np.sum(np.extract(self.blocks_used == 1, self.bytes_map))
@@ -154,6 +171,7 @@ heap = Heap()
 
 
 def new(num_bytes, fit="best", show=False):
+    """Recebe uma quantidade minima de bytes e cria um objeto Block baseado no tipo de fit"""
     block = None
     if fit == "best":
         block = heap.best_bitwise(num_bytes)
@@ -170,6 +188,7 @@ def new(num_bytes, fit="best", show=False):
 
 
 def delete(p: Block, show=False):
+    """Recebe um objeto de classe Block e a partir da lista de indices alocados; marca esses pontos como não usados"""
     ind = p.indexes
     Heap.blocks_used[ind] = False
 
