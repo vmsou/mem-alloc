@@ -56,8 +56,26 @@ def simulate():
 
 
 def show_allocated():
-    for block in heap.allocated:
-        print(block)
+    action_name = ["Desalocar", "Voltar para o menu"]
+    print("[ Alocados ]".center(60, "-"))
+    for n, block in enumerate(heap.allocated):
+        print(f"[{n}] {block}")
+
+    if heap.allocated:
+        block_pos = confirmar("Selecionar bloco: #", tipo=int, confirm=True, goto=menu, validation=lambda x: -1 < x < len(heap.allocated))
+        print("[ Ações ]".center(60, "-"))
+        for n, name in enumerate(action_name, start=1):
+            print(f"[{n}] {name}")
+
+        action = confirmar("Ação: ", tipo=int, confirm=True, goto=menu)
+        print()
+        if action == 1:
+            delete(heap.allocated[block_pos], show=True)
+    else:
+        console.log("Nenhuma alocação realizada.")
+
+
+
 
 
 def menu():

@@ -2,12 +2,12 @@ import numpy as np
 
 from core import size_confirm, BadAlloc
 
-
 print("[ Simulador de Memória ]".center(60, "-"))
 
 
 class Block:
     """Classe utilizada para representar o número de blocos alocados"""
+
     def __init__(self):
         self._index = None
         self.count = None
@@ -34,7 +34,7 @@ class Block:
     @index.setter
     def index(self, value):
         """Quando seu valor for atribuido; gaurda seus valores de modo contiguo em indices bidimensionais"""
-        self.indexes = np.unravel_index(range(value, value+self.count), (heap.rows, heap.columns))
+        self.indexes = np.unravel_index(range(value, value + self.count), (heap.rows, heap.columns))
         self._index = value
 
 
@@ -47,7 +47,8 @@ class Heap:
     max_size = rows * columns
     blocks_used = np.random.choice([0, 1], (rows, columns), p=[0.8, 0.2])  # Guarda os blocos atualmente utilizados
     # blocks_used = np.zeros((rows, columns), dtype=bool)
-    bytes_map = np.random.choice([10, 30], p=[0.8, 0.2], size=(rows, columns))  # Mapeia a quantidade de bytes em cada posição
+    bytes_map = np.random.choice([10, 30], p=[0.8, 0.2],
+                                 size=(rows, columns))  # Mapeia a quantidade de bytes em cada posição
     # bytes_map = np.repeat(30, max_size).reshape((rows, columns))
     b = range(max_size)  # Usado para iterar de forma eficiente em uma matriz flat
     allocated = []
@@ -114,6 +115,11 @@ class Heap:
         block.set_data(highest_idx, highest_count, highest_sum)
         return block
 
+    def free(self, p: Block):
+        ind = p.indexes
+        heap.blocks_used[ind] = False
+        heap.allocated.remove(p)
+
     def visualize_alloc(self, p: Block):
         """Recebe um objeto de Classe Block e a partir de seus indices imprime suas posições alocadas"""
         ind = p.indexes
@@ -162,7 +168,8 @@ class Heap:
         bytes_allocated = np.sum(np.extract(self.blocks_used == 1, self.bytes_map))
         n_free = np.sum(self.blocks_used == 0)
         bytes_free = total_bytes - bytes_allocated
-        print(f"[Memory] Total: {total_bytes} bytes | Allocated [{n_allocated}]: {bytes_allocated} bytes | Free [{n_free}]: {bytes_free} bytes")
+        print(
+            f"[Memory] Total: {total_bytes} bytes | Allocated [{n_allocated}]: {bytes_allocated} bytes | Free [{n_free}]: {bytes_free} bytes")
         for i in range(heap.rows):
             for j in range(heap.columns):
                 start = ""
@@ -173,7 +180,6 @@ class Heap:
                 print(f"{start}{self.bytes_map[i][j]}{end}", end=' ')
             print()
         print()
-
 
 
 heap = Heap()
@@ -199,10 +205,7 @@ def new(num_bytes, fit="best", show=False):
 
 def delete(p: Block, show=False):
     """Recebe um objeto de classe Block e a partir da lista de indices alocados; marca esses pontos como não usados"""
-    ind = p.indexes
-    heap.blocks_used[ind] = False
-
+    heap.free(p)
     print(f"[Dealloc] Bytes: {p.total_bytes} Indice: {p.index} Blocos: {p.count}")
-
     if show:
         heap.visualize_dealloc(p)
