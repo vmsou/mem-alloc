@@ -28,7 +28,7 @@ class Block:
     @index.setter
     def index(self, value):
         """Quando seu valor for atribuido; gaurda seus valores de modo contiguo em indices bidimensionais"""
-        self.indexes = np.unravel_index(range(value, value-self.count, -1), (Heap.rows, Heap.columns))
+        self.indexes = np.unravel_index(range(value, value+self.count), (Heap.rows, Heap.columns))
         self._index = value
 
 
@@ -91,8 +91,9 @@ class Heap:
         if lowest_idx is None:
             raise BadAlloc("Espaço Insuficiente")
 
-        print(f"[Best fit] Bytes: {lowest_sum} Indice: {lowest_idx} Blocos: {lowest_count}")
-        block.set_data(lowest_idx, lowest_count, lowest_sum)
+        final_idx = lowest_idx - lowest_count + 1
+        print(f"[Best fit] Bytes: {lowest_sum} Indice: {final_idx} Blocos: {lowest_count}")
+        block.set_data(final_idx, lowest_count, lowest_sum)
         self.blocks_used[block.indexes] = 1  # Atualiza a matriz para indicar as posições utilizadas
 
         return block
