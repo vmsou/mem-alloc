@@ -1,5 +1,7 @@
 affirmations = ('sim', 's', 'si', 'y', 'yes')
 exits = ('exit', 'sair', 'cancelar', 'back', 'voltar')
+colors = {"purple": '\033[95m', "blue": '\033[94m', "ciano": '\033[96m',
+         "green": '\033[92m', "yellow": '\033[93m', "red": '\033[91m'}
 
 
 class BadAlloc(Exception):
@@ -12,6 +14,26 @@ class Byte:
 
     def __repr__(self):
         return f"{hex(id(self))}: {self.value}"
+
+
+class Logger:
+    enabled = True
+
+    def __init__(self, name):
+        self.name = name
+
+    def log(self, message, color=None, bold=False):
+        strong = ''
+        start = ''
+        end = ''
+        if bold:
+            strong = '\033[1m'
+            end = '\033[0m'
+        if color in colors.keys():
+            end = "\033[0m"
+            start = colors[color]
+        if self.enabled:
+            print(f"[{self.name}]{strong}{start} {message}{end}")
 
 
 def size_confirm(name):

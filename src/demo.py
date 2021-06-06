@@ -1,17 +1,23 @@
 import numpy as np
+
 from mem_sys import heap, new, delete, Block
-from core import confirmar, BadAlloc, affirmations, coordinate_to_index
+from core import confirmar, BadAlloc, affirmations, coordinate_to_index, Logger
+
+console = Logger("Console")
+errorLogger = Logger("Error")
 
 
 def alocar():
+    print("[ Alocar ]".center(60, "-"))
     min_bytes = confirmar("Quantidade minima de bytes: ", tipo=int, confirm=True, goto=menu)
-    fit = confirmar("Tipo de fit: ", tipo=str, confirm=True, goto=menu, validation=lambda x: x.lower() in ("first", "best", "worst"))
+    fit = confirmar("Tipo de fit [first/best/worst]: ", tipo=str, confirm=True, goto=menu, validation=lambda x: x.lower() in ("first", "best", "worst"))
     show = confirmar("Mostrar alocação: ", tipo=str, confirm=False, goto=menu)
     show = True if show in affirmations else False
     new(min_bytes, fit, show=show)
 
 
 def desalocar():
+    print("[ Desalocar ]".center(60, "-"))
     block = Block()
     choice = confirmar("Coordenada ou Indice? ", confirm=False, goto=menu, validation=lambda x: x.lower() in ("coordenada", "indice"))
 
@@ -46,24 +52,31 @@ def simulate():
     heap.blocks_used = np.repeat(1, 5 * 20).reshape(5, 20)
     heap.blocks_used[idx] = 0
     heap.bytes_map = np.repeat(10, 5 * 20).reshape((5, 20))
+    console.log("Memória de exemplo aplicada com sucesso.")
 
 
 def menu():
     action_dict = {1: alocar, 2: desalocar, 3: heap.visualize, 4: simulate}
     action_name = ["Alocar", "Desalocar", "Visualizar", "Simular"]
     while True:
+        print("[ Menu ]".center(60, "-"))
         for n, name in enumerate(action_name, start=1):
             print(f"[{n}] {name}")
         try:
             action = confirmar("Ação: ", confirm=False, goto=menu)
+            print()
             action_dict[int(action)]()
         except ValueError:
-            print("Entrada Inválida! Tente Novamente.")
+            errorLogger.log("Entrada Inválida. Tente Novamente.", color="red")
+        except KeyError:
+            errorLogger.log("Ação não encontrada. Tente Novamente.", color="red")
         except BadAlloc:
-            print("Espaço insuficiente para Alocação.")
+            errorLogger.log("Espaço insuficiente para Alocação.", color="red")
 
 
 def main():
+    console.log("Bem vindo a simulação de memória.")
+    console.log("Durante qualquer momento você pode escrever 'sair' ou 'cancelar' para sair do input.", color='yellow')
     menu()
 
 
