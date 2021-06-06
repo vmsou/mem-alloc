@@ -36,7 +36,8 @@ def simulate():
     matriz.extend((3, i) for i in (5, 10, 11, 12, 14, 18))
     matriz.extend((4, i) for i in (0, 1, 2, 4, 5, 9, 10, 13, 17, 18, 19))
 
-    idx = np.array([a[0] for a in matriz]), np.array([a[1] for a in matriz])
+    x, y = zip(*matriz)
+    idx = np.array(x), np.array(y)
 
     heap.rows = 5
     heap.columns = 20
