@@ -12,8 +12,8 @@ def alocar():
     min_bytes = confirmar("Quantidade minima de bytes: ", tipo=int, confirm=True, goto=menu)
     fit = confirmar("Tipo de fit [first/best/worst]: ", tipo=str, confirm=True, goto=menu, validation=lambda x: x.lower() in ("first", "best", "worst"))
     show = confirmar("Mostrar alocação: ", tipo=str, confirm=False, goto=menu)
-    show = True if show in affirmations else False
-    new(min_bytes, fit, show=show)
+    show = show in affirmations
+    new(min_bytes, fit, show)
 
 
 def desalocar():
