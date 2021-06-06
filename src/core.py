@@ -47,3 +47,13 @@ def confirmar(mensagem, tipo=str, confirm=True, validation=None, goto=None):
             else:
                 break
     return valor
+
+
+def coordinate_to_index(coordinates: list, *, size: tuple):
+    rows, columns = size
+    indexes = []
+    for row, column in coordinates:
+        x = row * columns
+        y = column % columns
+        indexes.append(x + y)
+    return indexes
