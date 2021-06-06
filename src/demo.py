@@ -11,13 +11,15 @@ def alocar():
     new(min_bytes, fit, show=show)
 
 
-def dealocar():
-    ...
+def desalocar():
+    start_row = confirmar("Linha inicial: ", tipo=int, confirm=True, goto=menu)
+    start_column = confirmar("Coluna inicial: ", tipo=int, confirm=True, goto=menu)
+    start_column = confirmar("Quantidade de blocos: ", tipo=int, confirm=True, goto=menu)
 
 
 def menu():
-    action_dict = {1: alocar, 2: dealocar, 3: heap.visualize}
-    action_name = ["Alocar", "Dealocar", "Visualizar"]
+    action_dict = {1: alocar, 2: desalocar, 3: heap.visualize}
+    action_name = ["Alocar", "Desalocar", "Visualizar"]
     while True:
         for n, name in enumerate(action_name, start=1):
             print(f"[{n}] {name}")
@@ -36,8 +38,7 @@ def main():
     delete(t, show=True)
     heap.visualize()"""
 
-    while True:
-        menu()
+    menu()
 
 
 if __name__ == '__main__':
