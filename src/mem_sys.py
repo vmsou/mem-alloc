@@ -14,6 +14,9 @@ class Block:
         self.total_bytes = None
         self.indexes = None
 
+    def __repr__(self):
+        return f"Block(Bytes: {self.total_bytes}, Indice: {self._index}, Blocos: {self.count})"
+
     def __invert__(self):
         delete(self, show=True)
 
@@ -47,6 +50,7 @@ class Heap:
     bytes_map = np.random.choice([10, 30], p=[0.8, 0.2], size=(rows, columns))  # Mapeia a quantidade de bytes em cada posição
     # bytes_map = np.repeat(30, max_size).reshape((rows, columns))
     b = range(max_size)  # Usado para iterar de forma eficiente em uma matriz flat
+    allocated = []
 
     def first_bitwise(self, min_bytes):
         """Necessário a implementação
@@ -189,6 +193,7 @@ def new(num_bytes, fit="best", show=False):
 
     if show:
         heap.visualize_alloc(block)
+    heap.allocated.append(block)
     return block
 
 

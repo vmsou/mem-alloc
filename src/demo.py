@@ -11,7 +11,7 @@ def alocar():
     print("[ Alocar ]".center(60, "-"))
     min_bytes = confirmar("Quantidade minima de bytes: ", tipo=int, confirm=True, goto=menu)
     fit = confirmar("Tipo de fit [first/best/worst]: ", tipo=str, confirm=True, goto=menu, validation=lambda x: x.lower() in ("first", "best", "worst"))
-    show = confirmar("Mostrar alocação: ", tipo=str, confirm=False, goto=menu)
+    show = confirmar("Mostrar alocação? ", tipo=str, confirm=False, goto=menu)
     show = show in affirmations
     return new(min_bytes, fit, show)
 
@@ -55,9 +55,14 @@ def simulate():
     console.log("Memória de exemplo aplicada com sucesso.")
 
 
+def show_allocated():
+    for block in heap.allocated:
+        print(block)
+
+
 def menu():
-    action_dict = {1: alocar, 2: desalocar, 3: heap.visualize, 4: simulate}
-    action_name = ["Alocar", "Desalocar", "Visualizar", "Simular"]
+    action_dict = {1: alocar, 2: desalocar, 3: heap.visualize, 4: simulate, 5: show_allocated}
+    action_name = ["Alocar", "Desalocar", "Visualizar", "Simular", "Mostrar Alocações"]
     while True:
         print("[ Menu ]".center(60, "-"))
         for n, name in enumerate(action_name, start=1):
