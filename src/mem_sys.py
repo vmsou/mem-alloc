@@ -118,7 +118,8 @@ class Heap:
     def free(self, p: Block):
         ind = p.indexes
         heap.blocks_used[ind] = False
-        heap.allocated.remove(p)
+        if p in heap.allocated:
+            heap.allocated.remove(p)
 
     def visualize_alloc(self, p: Block):
         """Recebe um objeto de Classe Block e a partir de seus indices imprime suas posições alocadas"""
