@@ -37,8 +37,14 @@ def simulate():
     matriz.extend((4, i) for i in (0, 1, 2, 4, 5, 9, 10, 13, 17, 18, 19))
 
     idx = np.array([a[0] for a in matriz]), np.array([a[1] for a in matriz])
-    heap.blocks_used[:] = 1
+
+    heap.rows = 5
+    heap.columns = 20
+    heap.max_size = 5 * 20
+    heap.b = range(5 * 20)
+    heap.blocks_used = np.repeat(1, 5 * 20).reshape(5, 20)
     heap.blocks_used[idx] = 0
+    heap.bytes_map = np.repeat(10, 5 * 20).reshape((5, 20))
 
 
 def menu():

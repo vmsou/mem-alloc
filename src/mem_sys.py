@@ -28,7 +28,7 @@ class Block:
     @index.setter
     def index(self, value):
         """Quando seu valor for atribuido; gaurda seus valores de modo contiguo em indices bidimensionais"""
-        self.indexes = np.unravel_index(range(value, value+self.count), (Heap.rows, Heap.columns))
+        self.indexes = np.unravel_index(range(value, value+self.count), (heap.rows, heap.columns))
         self._index = value
 
 
@@ -82,7 +82,7 @@ class Heap:
                         break
 
                     idx += 1
-                    if idx >= Heap.max_size:
+                    if idx >= heap.max_size:
                         break
 
                     if b_flat[idx] == 1:
@@ -112,8 +112,8 @@ class Heap:
         ind = p.indexes
         idx = list(zip(*ind))
 
-        for i in range(Heap.rows):
-            for j in range(Heap.columns):
+        for i in range(heap.rows):
+            for j in range(heap.columns):
                 start = ""
                 end = ""
                 if (i, j) in idx:
@@ -139,11 +139,11 @@ class Heap:
                 if (i, j) in idx:
                     start = "\033[93m"
                     end = "\033[0m"
-                elif Heap.blocks_used[i][j]:
+                elif heap.blocks_used[i][j]:
                     start = "\033[91m"
                     end = "\033[0m"
 
-                value = Heap.bytes_map[i][j]
+                value = heap.bytes_map[i][j]
                 print(f"{start}{value}{end}", end=' ')
             print()
         print()
@@ -156,8 +156,8 @@ class Heap:
         n_free = np.sum(self.blocks_used == 0)
         bytes_free = total_bytes - bytes_allocated
         print(f"[Memory] Total: {total_bytes} bytes | Allocated [{n_allocated}]: {bytes_allocated} bytes | Free [{n_free}]: {bytes_free} bytes")
-        for i in range(Heap.rows):
-            for j in range(Heap.columns):
+        for i in range(heap.rows):
+            for j in range(heap.columns):
                 start = ""
                 end = ""
                 if self.blocks_used[i][j]:
@@ -191,7 +191,7 @@ def new(num_bytes, fit="best", show=False):
 def delete(p: Block, show=False):
     """Recebe um objeto de classe Block e a partir da lista de indices alocados; marca esses pontos como não usados"""
     ind = p.indexes
-    Heap.blocks_used[ind] = False
+    heap.blocks_used[ind] = False
 
     print(f"[Dealloc] Bytes: {p.total_bytes} Indice: {p.index} Blocos: {p.count}")
 
