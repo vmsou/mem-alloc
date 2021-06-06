@@ -13,7 +13,7 @@ def alocar():
     fit = confirmar("Tipo de fit [first/best/worst]: ", tipo=str, confirm=True, goto=menu, validation=lambda x: x.lower() in ("first", "best", "worst"))
     show = confirmar("Mostrar alocação: ", tipo=str, confirm=False, goto=menu)
     show = show in affirmations
-    new(min_bytes, fit, show)
+    return new(min_bytes, fit, show)
 
 
 def desalocar():
@@ -75,7 +75,7 @@ def menu():
 
 
 def main():
-    console.log("Bem vindo a simulação de memória.")
+    console.log("Bem-vindo ao Simulador de Memória. Projeto realizado como TDE 3 da disciplina de Raciocínio Algorítmico")
     console.log("Durante qualquer momento você pode escrever 'sair' ou 'cancelar' para sair do input.", color='yellow')
     menu()
 

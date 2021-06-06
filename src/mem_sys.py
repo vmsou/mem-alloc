@@ -3,6 +3,9 @@ import numpy as np
 from core import size_confirm, BadAlloc
 
 
+print("[ Simulador de Memória ]".center(60, "-"))
+
+
 class Block:
     """Classe utilizada para representar o número de blocos alocados"""
     def __init__(self):
@@ -166,6 +169,7 @@ class Heap:
                 print(f"{start}{self.bytes_map[i][j]}{end}", end=' ')
             print()
         print()
+
 
 
 heap = Heap()
