@@ -16,8 +16,8 @@ def desalocar():
     choice = confirmar("Coordenada ou Indice? ", confirm=False, goto=menu, validation=lambda x: x.lower() in ("coordenada", "indice"))
 
     if choice.lower() == "coordenada":
-        start_row = confirmar("Linha inicial: ", tipo=int, confirm=True, goto=menu)
-        start_column = confirmar("Coluna inicial: ", tipo=int, confirm=True, goto=menu)
+        start_row = confirmar("Linha inicial: ", tipo=int, confirm=True, goto=menu, validation=lambda x: x < heap.rows)
+        start_column = confirmar("Coluna inicial: ", tipo=int, confirm=True, goto=menu, validation=lambda x: x < heap.columns)
         index = coordinate_to_index([(start_row, start_column)], size=(heap.rows, heap.columns))[0]
     else:
         index = confirmar("Indice: ", tipo=int, confirm=True, goto=menu, validation=lambda x: x <= heap.max_size)

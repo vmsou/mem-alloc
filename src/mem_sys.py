@@ -104,7 +104,7 @@ class Heap:
         """
         highest_idx, highest_count, highest_sum = 0, 0, 0
         block = Block()
-        block.set_data(highest_idx, highest_count, highest_count)
+        block.set_data(highest_idx, highest_count, highest_sum)
         return block
 
     def visualize_alloc(self, p: Block):
