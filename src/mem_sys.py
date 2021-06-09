@@ -54,12 +54,39 @@ class Heap:
     allocated = []
 
     def first_bitwise(self, min_bytes):
-        """Necessário a implementação
+        """Concluido
         Encontra o primeiro espaço em memória cujo o tamanho seja igual ou maior que o desejado
         """
+
         block = Block()
-        i, count, soma = 0, 0, 0
-        block.set_data(i, count, soma)
+        lowest_sum = 1e6
+        lowest_count = 1e6
+        lowest_idx = None
+
+        # Converte a matriz de forma que possa ser lida de forma contígua
+        b_flat = self.blocks_used.flat
+        bm_flat = self.bytes_map.flat
+        count = 0
+        soma = 0
+        for i in self.b:
+            if b_flat[i] == 0:
+                count += 1
+                soma += bm_flat[i]
+            else:
+                count = 0
+                soma = 0
+            if min_bytes <= soma <= lowest_sum and count <= lowest_count:
+                lowest_idx = i
+                break
+
+        if lowest_idx is None:
+            raise BadAlloc("Espaço Insuficiente")
+        else:
+            final_idx = lowest_idx - count + 1
+            print(f"[First fit] Bytes: {soma} Indice: {final_idx} Blocos: {count}")
+            block.set_data(final_idx, count, soma)
+            self.blocks_used[block.indexes] = 1  # Atualiza a matriz para indicar as posições utilizadas
+
         return block
 
     def best_bitwise(self, min_bytes):
