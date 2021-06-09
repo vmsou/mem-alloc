@@ -134,12 +134,38 @@ class Heap:
         return block
 
     def worst_bitwise(self, min_bytes):
-        """Necessário a implementação
+        """Concluido
         Encontra a região na memória com maior espaço livre
         """
-        highest_idx, highest_count, highest_sum = 0, 0, 0
         block = Block()
+        highest_idx, highest_count, highest_sum = 0, 0, 0
+
+        # Matriz plana
+        b_flat = self.blocks_used.flat
+        bm_flat = self.bytes_map.flat
+
+        for i in self.b:
+            contador = 0
+            idx = i
+            soma = 0
+            if b_flat[i] == 0:
+                while b_flat[i] == 0:
+                    contador += 1
+                    soma += bm_flat[idx]
+
+                    if soma >= min_bytes and soma >= highest_sum and contador >= highest_count:
+                        highest_sum = soma
+                        highest_idx = i
+                        highest_count = contador
+
+                    idx += 1
+                    if idx >= heap.max_size:
+                        break
+                    if b_flat[idx] == 1:
+                        break
+
         block.set_data(highest_idx, highest_count, highest_sum)
+        self.blocks_used[block.indexes] = 1
         return block
 
     def free(self, p: Block):
