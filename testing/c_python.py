@@ -3,7 +3,7 @@ from time import perf_counter
 import numpy as np
 from pathlib import Path
 
-p = Path().absolute() / 'cpp' / 'libtest.so'
+p = Path().absolute() / 'cpp' / 'libtest2.so'
 lib = cdll.LoadLibrary(str(p))
 
 # Functions
@@ -38,7 +38,7 @@ def main():
 
     start = perf_counter()
     # count = first(indata, blocks, rows * columns)
-    multi_first(indata, 20000, blocks, rows * columns)
+    multi_first(indata, 100000, blocks, rows * columns)
     print(f"{perf_counter() - start}s")
 
     print(indata.astype(int))
